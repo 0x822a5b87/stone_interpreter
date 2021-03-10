@@ -56,3 +56,19 @@ An option can be represented through squared brackets [ ... ]. That is, everythi
 ```EBNF
 integer = "0" | [ "-" ], natural number ;
 ```
+
+## stone EBNF
+
+```
+primary:	"(" expr ")" | NUMBER | IDENTIFIER | STRING
+factor:		"-" primary | primary
+expr:		factor { OP factor }
+block:		"{" [ statement ] {(";" | EOL) [ statement ]} "}"
+simple:		expr
+statement:	"if" expr block ["else" block]
+				| "while" expr block
+				| simple
+program:	[ statement ] (";" | EOL)
+```
+
+

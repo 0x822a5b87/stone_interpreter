@@ -1,4 +1,4 @@
-package com.xxx.stone;
+package com.xxx.stone.ast;
 
 /**
  * 数字字面量

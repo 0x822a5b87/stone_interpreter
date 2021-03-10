@@ -1,5 +1,7 @@
 package com.xxx.stone;
 
+import com.xxx.stone.ast.AbstractSyntaxTree;
+
 public class StoneException extends RuntimeException {
 
     public StoneException(String m) {

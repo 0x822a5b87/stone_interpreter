@@ -1,5 +1,6 @@
 package com.xxx.stone;
 
+import com.xxx.stone.ast.Token;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;

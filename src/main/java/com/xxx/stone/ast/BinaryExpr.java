@@ -22,6 +22,6 @@ public class BinaryExpr extends AbstractSyntaxList {
     }
 
     public AbstractSyntaxTree right() {
-        return children.get(1);
+        return children.get(2);
     }
 }

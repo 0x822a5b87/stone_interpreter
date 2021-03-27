@@ -41,4 +41,7 @@ public class AbstractSyntaxLeaf extends AbstractSyntaxTree {
     public Token getToken() {
         return token;
     }
+
+    @Override
+    public String toString() { return token.getText(); }
 }

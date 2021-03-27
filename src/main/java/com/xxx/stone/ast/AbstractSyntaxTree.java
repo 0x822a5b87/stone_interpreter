@@ -36,6 +36,7 @@ public abstract class AbstractSyntaxTree implements Iterable<AbstractSyntaxTree>
      */
     public abstract String location();
 
+    @Override
     public Iterator<AbstractSyntaxTree> iterator() {
         return children();
     }

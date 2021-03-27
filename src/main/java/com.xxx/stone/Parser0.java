@@ -16,7 +16,7 @@ import java.util.List;
  *
  *         解析器
  */
-public class Parser {
+public class Parser0 {
 
     protected static abstract class Element {
 
@@ -40,40 +40,42 @@ public class Parser {
 
     protected static class Tree extends Element {
 
-        protected Parser parser;
+        protected Parser0 parser0;
 
-        protected Tree(Parser p) {
-            parser = p;
+        protected Tree(Parser0 p) {
+            parser0 = p;
         }
 
         @Override
         protected void parse(Lexer lexer, List<AbstractSyntaxTree> res)
                 throws ParseException {
-            res.add(parser.parse(lexer));
+            AbstractSyntaxTree ast = parser0.parse(lexer);
+            res.add(ast);
         }
 
         @Override
         protected boolean match(Lexer lexer) throws ParseException {
-            return parser.match(lexer);
+            return parser0.match(lexer);
         }
     }
 
     protected static class OrTree extends Element {
 
-        protected Parser[] parsers;
+        protected Parser0[] parser0s;
 
-        protected OrTree(Parser[] p) {
-            parsers = p;
+        protected OrTree(Parser0[] p) {
+            parser0s = p;
         }
 
         @Override
         protected void parse(Lexer lexer, List<AbstractSyntaxTree> res)
                 throws ParseException {
-            Parser p = choose(lexer);
+            Parser0 p = choose(lexer);
             if (p == null) {
                 throw new ParseException(lexer.peek(0));
             } else {
-                res.add(p.parse(lexer));
+                AbstractSyntaxTree ast = p.parse(lexer);
+                res.add(ast);
             }
         }
 
@@ -82,8 +84,8 @@ public class Parser {
             return choose(lexer) != null;
         }
 
-        protected Parser choose(Lexer lexer) throws ParseException {
-            for (Parser p : parsers) {
+        protected Parser0 choose(Lexer lexer) throws ParseException {
+            for (Parser0 p : parser0s) {
                 if (p.match(lexer)) {
                     return p;
                 }
@@ -92,29 +94,29 @@ public class Parser {
             return null;
         }
 
-        protected void insert(Parser p) {
-            Parser[] newParsers = new Parser[parsers.length + 1];
-            newParsers[0] = p;
-            System.arraycopy(parsers, 0, newParsers, 1, parsers.length);
-            parsers = newParsers;
+        protected void insert(Parser0 p) {
+            Parser0[] newParser0s = new Parser0[parser0s.length + 1];
+            newParser0s[0] = p;
+            System.arraycopy(parser0s, 0, newParser0s, 1, parser0s.length);
+            parser0s = newParser0s;
         }
     }
 
     protected static class Repeat extends Element {
 
-        protected Parser  parser;
+        protected Parser0 parser0;
         protected boolean onlyOnce;
 
-        protected Repeat(Parser p, boolean once) {
-            parser = p;
+        protected Repeat(Parser0 p, boolean once) {
+            parser0 = p;
             onlyOnce = once;
         }
 
         @Override
         protected void parse(Lexer lexer, List<AbstractSyntaxTree> res)
                 throws ParseException {
-            while (parser.match(lexer)) {
-                AbstractSyntaxTree t = parser.parse(lexer);
+            while (parser0.match(lexer)) {
+                AbstractSyntaxTree t = parser0.parse(lexer);
                 if (t.getClass() != AbstractSyntaxList.class || t.numChildren() > 0) {
                     res.add(t);
                 }
@@ -126,7 +128,7 @@ public class Parser {
 
         @Override
         protected boolean match(Lexer lexer) throws ParseException {
-            return parser.match(lexer);
+            return parser0.match(lexer);
         }
     }
 
@@ -283,9 +285,9 @@ public class Parser {
 
         protected Factory   factory;
         protected Operators ops;
-        protected Parser    factor;
+        protected Parser0   factor;
 
-        protected Expr(Class<? extends AbstractSyntaxTree> clazz, Parser exp,
+        protected Expr(Class<? extends AbstractSyntaxTree> clazz, Parser0 exp,
                        Operators map) {
             factory = Factory.getForAbstractSyntaxList(clazz);
             ops = map;
@@ -446,15 +448,24 @@ public class Parser {
     protected List<Element> elements;
     protected Factory       factory;
 
-    public Parser(Class<? extends AbstractSyntaxTree> clazz) {
+    public Parser0(Class<? extends AbstractSyntaxTree> clazz) {
         reset(clazz);
     }
 
-    protected Parser(Parser p) {
+    protected Parser0(Parser0 p) {
         elements = p.elements;
         factory = p.factory;
     }
 
+    /**
+     * parse 方法是 Parser 的实例方法，每个 Parser 内部包含了多个 {@link Parser0#elements}。
+     * 因为 BNF 中的每一个定义都有可能是不同的类型，比如 program 可能是 statement，也有可能是终结符 ;
+     * 所以每一个 Parser 实例都包含了多个 element，然后 element 会去判断是否可以正常解析 BNF 元素
+     *
+     * @param lexer lexer
+     * @return ast
+     * @throws ParseException parse 异常
+     */
     public AbstractSyntaxTree parse(Lexer lexer) throws ParseException {
         ArrayList<AbstractSyntaxTree> results = new ArrayList<AbstractSyntaxTree>();
         for (Element e : elements) {
@@ -477,7 +488,7 @@ public class Parser {
      * 创建parser对象，parser 对象内部的 factory 提供的 make 方法可以构建一个 AST
      * 由于没有提供 clazz，所以 make 方法的实现是根据 make(List.class)
      */
-    public static Parser rule() {
+    public static Parser0 rule() {
         return rule(null);
     }
 
@@ -485,16 +496,16 @@ public class Parser {
      * 创建parser对象，parser对象内部包含了一个 factory，这个 factory 的 make 方法可以构建一个 AST
      * make 方法会基于 clazz 方法内部提供的 create(List.class) 方法来构造一个 AST
      */
-    public static Parser rule(Class<? extends AbstractSyntaxTree> clazz) {
-        return new Parser(clazz);
+    public static Parser0 rule(Class<? extends AbstractSyntaxTree> clazz) {
+        return new Parser0(clazz);
     }
 
-    public Parser reset() {
+    public Parser0 reset() {
         elements = new ArrayList<Element>();
         return this;
     }
 
-    public Parser reset(Class<? extends AbstractSyntaxTree> clazz) {
+    public Parser0 reset(Class<? extends AbstractSyntaxTree> clazz) {
         elements = new ArrayList<Element>();
         factory = Factory.getForAbstractSyntaxList(clazz);
         return this;
@@ -505,7 +516,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser number() {
+    public Parser0 number() {
         return number(null);
     }
 
@@ -514,7 +525,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser number(Class<? extends AbstractSyntaxLeaf> clazz) {
+    public Parser0 number(Class<? extends AbstractSyntaxLeaf> clazz) {
         elements.add(new NumToken(clazz));
         return this;
     }
@@ -524,7 +535,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser identifier(HashSet<String> reserved) {
+    public Parser0 identifier(HashSet<String> reserved) {
         return identifier(null, reserved);
     }
 
@@ -533,8 +544,8 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser identifier(Class<? extends AbstractSyntaxLeaf> clazz,
-                             HashSet<String> reserved) {
+    public Parser0 identifier(Class<? extends AbstractSyntaxLeaf> clazz,
+                              HashSet<String> reserved) {
         elements.add(new IdToken(clazz, reserved));
         return this;
     }
@@ -544,7 +555,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser string() {
+    public Parser0 string() {
         return string(null);
     }
 
@@ -553,7 +564,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser string(Class<? extends AbstractSyntaxLeaf> clazz) {
+    public Parser0 string(Class<? extends AbstractSyntaxLeaf> clazz) {
         elements.add(new StrToken(clazz));
         return this;
     }
@@ -563,7 +574,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser token(String... pat) {
+    public Parser0 token(String... pat) {
         elements.add(new Leaf(pat));
         return this;
     }
@@ -573,7 +584,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser sep(String... pat) {
+    public Parser0 sep(String... pat) {
         elements.add(new Skip(pat));
         return this;
     }
@@ -583,7 +594,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser ast(Parser p) {
+    public Parser0 ast(Parser0 p) {
         elements.add(new Tree(p));
         return this;
     }
@@ -593,7 +604,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser or(Parser... p) {
+    public Parser0 or(Parser0... p) {
         elements.add(new OrTree(p));
         return this;
     }
@@ -603,10 +614,10 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser maybe(Parser p) {
-        Parser p2 = new Parser(p);
+    public Parser0 maybe(Parser0 p) {
+        Parser0 p2 = new Parser0(p);
         p2.reset();
-        elements.add(new OrTree(new Parser[]{p, p2}));
+        elements.add(new OrTree(new Parser0[]{p, p2}));
         return this;
     }
 
@@ -615,7 +626,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser option(Parser p) {
+    public Parser0 option(Parser0 p) {
         elements.add(new Repeat(p, true));
         return this;
     }
@@ -625,7 +636,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser repeat(Parser p) {
+    public Parser0 repeat(Parser0 p) {
         elements.add(new Repeat(p, false));
         return this;
     }
@@ -635,7 +646,7 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser expression(Parser subexp, Operators operators) {
+    public Parser0 expression(Parser0 subexp, Operators operators) {
         elements.add(new Expr(null, subexp, operators));
         return this;
     }
@@ -645,8 +656,8 @@ public class Parser {
      *
      * @return parser
      */
-    public Parser expression(Class<? extends AbstractSyntaxTree> clazz, Parser subexp,
-                             Operators operators) {
+    public Parser0 expression(Class<? extends AbstractSyntaxTree> clazz, Parser0 subexp,
+                              Operators operators) {
         elements.add(new Expr(clazz, subexp, operators));
         return this;
     }
@@ -654,12 +665,12 @@ public class Parser {
     /**
      * 为语法规则起始处的or添加新的分支选项
      */
-    public Parser insertChoice(Parser p) {
+    public Parser0 insertChoice(Parser0 p) {
         Element e = elements.get(0);
         if (e instanceof OrTree) {
             ((OrTree) e).insert(p);
         } else {
-            Parser otherwise = new Parser(this);
+            Parser0 otherwise = new Parser0(this);
             reset(null);
             or(p, otherwise);
         }

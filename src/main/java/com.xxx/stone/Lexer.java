@@ -18,7 +18,7 @@ public class Lexer {
     public static final String COMMENT_PATTERN        = "//.*";
     public static final String NUMBER_LITERAL_PATTERN = "[0-9]+";
     public static final String STRING_LITERAL_PATTERN = "\"(\\\\\"|\\\\\\\\|\\\\n|[^\"])*\"";
-    public static final String IDENTIFIER_PATTERN     = "[A-Za-z][A-Za-z0-9]*|==|<=|>=|&&|\\|\\||\\p{Punct}";
+    public static final String IDENTIFIER_PATTERN     = "[A-Z_a-z][A-Z_a-z0-9]*|==|<=|>=|&&|\\|\\||\\p{Punct}";
 
     public static final String TOTAL_PATTERN = String.format("\\s*((%s)|(%s)|(%s)|%s)?",
                                                              COMMENT_PATTERN,
@@ -88,6 +88,8 @@ public class Lexer {
                 throw new ParseException("bad token at line " + lineNo);
             }
         }
+        // 这个不能少，因为 Token.EOL 是一个非常重要的终结符
+        queue.add(new IdToken(lineNo, Token.EOL));
     }
 
     protected void addToToken(int lineNo, Matcher matcher) {

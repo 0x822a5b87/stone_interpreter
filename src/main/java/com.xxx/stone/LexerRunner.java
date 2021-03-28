@@ -10,7 +10,7 @@ import java.io.StringReader;
  */
 public class LexerRunner {
 
-    private static final String STR_CODE = "even = 0\n"
+    public static final String STR_CODE = "even = 0\n"
                                            + "odd = 0\n"
                                            + "i = 1\n"
                                            + "while i < 10 {\n"

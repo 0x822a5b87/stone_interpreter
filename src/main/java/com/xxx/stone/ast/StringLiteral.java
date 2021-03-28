@@ -1,5 +1,7 @@
 package com.xxx.stone.ast;
 
+import com.xxx.stone.interpreter.Environment;
+
 public class StringLiteral extends AbstractSyntaxLeaf {
 
     public StringLiteral(Token t) {
@@ -8,5 +10,10 @@ public class StringLiteral extends AbstractSyntaxLeaf {
 
     public String value() {
         return getToken().getText();
+    }
+
+    @Override
+    public Object eval(Environment e) {
+        return value();
     }
 }

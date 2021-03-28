@@ -1,5 +1,7 @@
 package com.xxx.stone.ast;
 
+import com.xxx.stone.StoneException;
+import com.xxx.stone.interpreter.Environment;
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,5 +56,10 @@ public class AbstractSyntaxList extends AbstractSyntaxTree {
             builder.append(t.toString());
         }
         return builder.append(')').toString();
+    }
+
+    @Override
+    public Object eval(Environment env) {
+        throw new StoneException("cannot eval: " + toString(), this);
     }
 }

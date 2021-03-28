@@ -1,5 +1,6 @@
 package com.xxx.stone.ast;
 
+import com.xxx.stone.interpreter.Environment;
 import java.util.Iterator;
 
 /**
@@ -40,4 +41,11 @@ public abstract class AbstractSyntaxTree implements Iterable<AbstractSyntaxTree>
     public Iterator<AbstractSyntaxTree> iterator() {
         return children();
     }
+
+    /**
+     * 执行 AST 节点。
+     * @param env 环境
+     * @return 执行结果
+     */
+    public abstract Object eval(Environment env);
 }

@@ -1,20 +1,5 @@
 package com.xxx.stone.interpreter;
 
-import com.xxx.stone.StoneException;
-import com.xxx.stone.ast.AbstractSyntaxLeaf;
-import com.xxx.stone.ast.AbstractSyntaxList;
-import com.xxx.stone.ast.AbstractSyntaxTree;
-import com.xxx.stone.ast.BinaryExpr;
-import com.xxx.stone.ast.BlockStatement;
-import com.xxx.stone.ast.IfStatement;
-import com.xxx.stone.ast.Name;
-import com.xxx.stone.ast.NegativeExpr;
-import com.xxx.stone.ast.NullStatement;
-import com.xxx.stone.ast.NumberLiteral;
-import com.xxx.stone.ast.StringLiteral;
-import com.xxx.stone.ast.Token;
-import com.xxx.stone.ast.WhileStatement;
-import java.util.List;
 import javassist.gluonj.Reviser;
 
 /**
@@ -29,82 +14,82 @@ public class BasicEvaluator {
 
     public static final int TRUE  = 1;
     public static final int FALSE = 0;
-
-    @Reviser
-    public static abstract class AbstractSyntaxTreeEx extends AbstractSyntaxTree {
-
-        @Override
-        public abstract Object eval(Environment env);
-    }
-
-    @Reviser
-    public static class NumberEx extends NumberLiteral {
-
-        public NumberEx(Token t) {
-            super(t);
-        }
-    }
-
-    @Reviser
-    public static class StringEx extends StringLiteral {
-
-        public StringEx(Token t) {
-            super(t);
-        }
-
-    }
-
-    @Reviser
-    public static class NameEx extends Name {
-
-        public NameEx(Token t) {
-            super(t);
-        }
-
-    }
-
-    @Reviser
-    public static class NegativeEx extends NegativeExpr {
-
-        public NegativeEx(List<AbstractSyntaxTree> c) {
-            super(c);
-        }
-
-    }
-
-    @Reviser
-    public static class BinaryEx extends BinaryExpr {
-
-        public BinaryEx(List<AbstractSyntaxTree> c) {
-            super(c);
-        }
-
-    }
-
-    @Reviser
-    public static class BlockEx extends BlockStatement {
-
-        public BlockEx(List<AbstractSyntaxTree> c) {
-            super(c);
-        }
-
-    }
-
-    @Reviser
-    public static class IfEx extends IfStatement {
-
-        public IfEx(List<AbstractSyntaxTree> c) {
-            super(c);
-        }
-
-    }
-
-    @Reviser
-    public static class WhileEx extends WhileStatement {
-
-        public WhileEx(List<AbstractSyntaxTree> c) {
-            super(c);
-        }
-
-    }
+//
+//    @Reviser
+//    public static abstract class AbstractSyntaxTreeEx extends AbstractSyntaxTree {
+//
+//        @Override
+//        public abstract Object eval(Environment env);
+//    }
+//
+//    @Reviser
+//    public static class NumberEx extends NumberLiteral {
+//
+//        public NumberEx(Token t) {
+//            super(t);
+//        }
+//    }
+//
+//    @Reviser
+//    public static class StringEx extends StringLiteral {
+//
+//        public StringEx(Token t) {
+//            super(t);
+//        }
+//
+//    }
+//
+//    @Reviser
+//    public static class NameEx extends Name {
+//
+//        public NameEx(Token t) {
+//            super(t);
+//        }
+//
+//    }
+//
+//    @Reviser
+//    public static class NegativeEx extends NegativeExpr {
+//
+//        public NegativeEx(List<AbstractSyntaxTree> c) {
+//            super(c);
+//        }
+//
+//    }
+//
+//    @Reviser
+//    public static class BinaryEx extends BinaryExpr {
+//
+//        public BinaryEx(List<AbstractSyntaxTree> c) {
+//            super(c);
+//        }
+//
+//    }
+//
+//    @Reviser
+//    public static class BlockEx extends BlockStatement {
+//
+//        public BlockEx(List<AbstractSyntaxTree> c) {
+//            super(c);
+//        }
+//
+//    }
+//
+//    @Reviser
+//    public static class IfEx extends IfStatement {
+//
+//        public IfEx(List<AbstractSyntaxTree> c) {
+//            super(c);
+//        }
+//
+//    }
+//
+//    @Reviser
+//    public static class WhileEx extends WhileStatement {
+//
+//        public WhileEx(List<AbstractSyntaxTree> c) {
+//            super(c);
+//        }
+//
+//    }
 }

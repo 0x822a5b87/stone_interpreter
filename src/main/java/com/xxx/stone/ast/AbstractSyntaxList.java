@@ -35,7 +35,6 @@ public class AbstractSyntaxList extends AbstractSyntaxTree {
 
     @Override
     public String location() {
-        // TODO 这里的代码不是很理解，为什么 location 是遍历 children 呢？
         for (AbstractSyntaxTree t : children) {
             String s = t.location();
             if (s != null) {

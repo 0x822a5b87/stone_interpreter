@@ -18,6 +18,12 @@ import java.util.List;
  */
 public class Parser {
 
+    /**
+     * 解析器的实际工作类，因为一个 Parser 的实例中 {@link Parser#elements} 包含了很多 element；
+     * 例如，在解析 primary 的时候，我们并不知道实际要解析的 token 是 NUMBER 还是 STRING。
+     * 所以我们必须使用 {@link Element#match(Lexer)} 方法先判断当前 token 是否匹配，
+     * 随后调用 {@link Element#parse(Lexer, List)} 进行实际的解析；
+     */
     protected static abstract class Element {
 
         /**
@@ -32,6 +38,7 @@ public class Parser {
 
         /**
          * 检查输入是否匹配当前的 Parser
+         *
          * @param lexer 词法解析器
          * @return 是否匹配Parser
          * @throws ParseException 解析异常
@@ -354,6 +361,27 @@ public class Parser {
 
         protected abstract AbstractSyntaxTree make0(Object arg) throws Exception;
 
+        /**
+         * make 方法基于 Object 对象以及在初始化 {@link Factory#get(Class, Class)} 时传入的参数来构造一颗 ast；
+         *
+         * make 方法在一下几个位置调用：
+         * <br />
+         * {@link AToken#parse(Lexer, List)}
+         * <br />
+         * {@link Expr#doShift(Lexer, AbstractSyntaxTree, int)}
+         * <br />
+         * {@link Parser#parse(Lexer)}
+         * <br />
+         * 其中 AToken 解析 Token 的抽象类，注意，AToken 会自动的设置工厂方法的 class 为 {@link AbstractSyntaxLeaf}
+         * <br />
+         * Expr 解析 Expr 表达式
+         * <br />
+         * AToken 和 Expr 都是执行实际的解析，而 Parser 的 parse 方法是调用了内部的 {@link Parser#elements} 的所有
+         * parse 方法并将得到的结果返回构造。
+         *
+         * @param arg
+         * @return
+         */
         protected AbstractSyntaxTree make(Object arg) {
             try {
                 return make0(arg);
@@ -374,6 +402,7 @@ public class Parser {
          * 如果 clazz 为 null，那么构建一个简单的 provider。
          * 当参数 size == 1，那么就是 arg.get(0)；
          * 当参数 size != 1，那么就是 new AbstractSyntaxList(args)
+         *
          * @param clazz
          * @return
          */
@@ -460,8 +489,9 @@ public class Parser {
 
     /**
      * parse 方法是 Parser 的实例方法，每个 Parser 内部包含了多个 {@link Parser#elements}。
-     * 因为 BNF 中的每一个定义都有可能是不同的类型，比如 program 可能是 statement，也有可能是终结符 ;
-     * 所以每一个 Parser 实例都包含了多个 element，然后 element 会去判断是否可以正常解析 BNF 元素
+     * 在 BNF 中的复合类型，例如 expr:factor { OP factor }
+     * 需要先解析 factor，随后解析 { OP factor }
+     * 所以一个 Parser 内部是有一个 {@link Parser#elements} 的
      *
      * @param lexer lexer
      * @return ast
@@ -487,7 +517,7 @@ public class Parser {
 
     /**
      * 创建parser对象，parser 对象内部的 factory 提供的 make 方法可以构建一个 AST
-     * 由于没有提供 clazz，所以 make 方法的实现是根据 make(List.class)
+     * 由于没有提供 clazz，所以 make 方法的实现是根据 {@link Factory#make(Object)}
      */
     public static Parser rule() {
         return rule(null);

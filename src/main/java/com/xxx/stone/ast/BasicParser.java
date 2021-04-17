@@ -30,35 +30,42 @@ public class BasicParser {
 
     Operators operators = new Operators();
 
-    Parser exp0 = rule();
+    /**
+     * exp0 == expr
+     * <br/>
+     * 之所以这么声明，是因为存在依赖链 expr -> factor -> primary -> expr
+     * <br/>
+     * 没办法直接声明 rule().expression(BinaryExpr.class, factor, operators)
+     */
+    Parser exp0 = rule("exp0");
 
     /**
      * primary 解析器
      *
      * rule(PrimaryExpr.class) 内部包含的 make(Object args) 方法可以构建一个 PrimaryExpr 的类。
      */
-    Parser primary = rule(PrimaryExpr.class)
-            .or(rule().sep("(").ast(exp0).sep(")"),
-                rule().number(NumberLiteral.class),
-                rule().identifier(Name.class, reserved),
-                rule().string(StringLiteral.class));
+    Parser primary = rule("primary", PrimaryExpr.class)
+            .or(rule("primary01").sep("(").ast(exp0).sep(")"),
+                rule("primary02").number(NumberLiteral.class),
+                rule("primary03").identifier(Name.class, reserved),
+                rule("primary04").string(StringLiteral.class));
 
-    Parser factor = rule().or(rule(NegativeExpr.class).sep("-").ast(primary),
+    Parser factor = rule("factor").or(rule("factor01", NegativeExpr.class).sep("-").ast(primary),
                               primary);
 
     Parser expr = exp0.expression(BinaryExpr.class, factor, operators);
 
-    Parser statement0 = rule();
+    Parser statement0 = rule("statement0");
 
     /**
      * block:        "{" [ statement ] {(";" | EOL) [ statement ]} "}"
      */
-    Parser block = rule(BlockStatement.class)
+    Parser block = rule("block", BlockStatement.class)
             .sep("{").option(statement0)
-            .repeat(rule().sep(";", Token.EOL).option(statement0))
+            .repeat(rule("block01").sep(";", Token.EOL).option(statement0))
             .sep("}");
 
-    Parser simple = rule(PrimaryExpr.class).ast(expr);
+    Parser simple = rule("simple", PrimaryExpr.class).ast(expr);
 
     /**
      * statement:    "if" expr block ["else" block]
@@ -66,9 +73,9 @@ public class BasicParser {
      * | simple
      */
     Parser statement = statement0.or(
-            rule(IfStatement.class).sep("if").ast(expr).ast(block)
-                    .option(rule().sep("else").ast(block)),
-            rule(WhileStatement.class).sep("while").ast(expr).ast(block),
+            rule("statement", IfStatement.class).sep("if").ast(expr).ast(block)
+                    .option(rule("statement01").sep("else").ast(block)),
+            rule("statement02", WhileStatement.class).sep("while").ast(expr).ast(block),
             simple
     );
 
@@ -83,7 +90,7 @@ public class BasicParser {
      * program 或者是一颗 statement 语法树，或者是一个 NullStatement 节点。
      */
 
-    Parser program = rule().or(statement, rule(NullStatement.class))
+    Parser program = rule("program").or(statement, rule("program01", NullStatement.class))
             .sep(";", Token.EOL);
 
     public BasicParser() {

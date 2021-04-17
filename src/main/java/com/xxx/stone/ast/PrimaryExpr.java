@@ -1,12 +1,28 @@
 package com.xxx.stone.ast;
 
 import com.xxx.stone.Parser;
+import com.xxx.stone.interpreter.Environment;
 import java.util.List;
 
 /**
+ * <em>
+ *     {@link PrimaryExpr} 是一个特殊的类，因为他提供了 {@link PrimaryExpr#create(List)} 方法，
+ *     这个方法的优先级是高于构造器的。
+ *     <br/>
+ *     在构造函数的 List<AbstractSyntaxTree> 的长度 == 1 时，它会忽略掉 PrimaryExpr 而直接
+ *     返回它的子节点。
+ * </em>
+ * <br/>
+ * 基础表达式，可能是 {@link NumberLiteral}, {@link Name}, {@link StringLiteral}
+ * 括号括起来的 {@link  BasicParser#expr}, {@link BasicParser#simple}
+ * <br/>
+ * 其中 {@link BasicParser#expr} 和 {@link BasicParser#simple} 都是多元操作符
+ * 另外，由于在 {@link FuncParser#FuncParser()} 中扩展了 simple 和 primary，
+ * 所以它也可能是一个函数调用。
+ * <br/>
+ * 前面三种类型都是终结符，后面则不是。
+ * <br/>
  * @author 0x822a5b87
- *
- * primary expression
  */
 public class PrimaryExpr extends AbstractSyntaxList {
 
@@ -28,5 +44,23 @@ public class PrimaryExpr extends AbstractSyntaxList {
      */
     public static AbstractSyntaxTree create(List<AbstractSyntaxTree> c) {
         return c.size() == 1 ? c.get(0) : new PrimaryExpr(c);
+    }
+
+    /**
+     * 返回操作数
+     * @return 操作数
+     */
+    public AbstractSyntaxTree operand() {
+        return child(0);
+    }
+
+    public Postfix postfix(int nest) {
+        return (Postfix) child(numChildren() - nest - 1);
+    }
+
+    @Override
+    public Object eval(Environment env) {
+        // TODO 函数的执行在解析时被解析成 PrimaryExpr，所以需要支持函数执行
+        return super.eval(env);
     }
 }

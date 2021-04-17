@@ -1,5 +1,6 @@
 package com.xxx.stone.ast;
 
+import com.xxx.stone.func.Function;
 import com.xxx.stone.interpreter.Environment;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class DefStatement extends AbstractSyntaxList {
 
     @Override
     public Object eval(Environment env) {
-        // TODO 实现 def 的 eval
-        return super.eval(env);
+        env.putNew(name(), new Function(parameters(), body(), env));
+        return "<func: [" + name() + "]>";
     }
 }

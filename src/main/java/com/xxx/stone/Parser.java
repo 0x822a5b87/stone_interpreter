@@ -18,11 +18,27 @@ import java.util.List;
  */
 public class Parser {
 
+    private String name;
+
     /**
-     * 解析器的实际工作类，因为一个 Parser 的实例中 {@link Parser#elements} 包含了很多 element；
-     * 例如，在解析 primary 的时候，我们并不知道实际要解析的 token 是 NUMBER 还是 STRING。
-     * 所以我们必须使用 {@link Element#match(Lexer)} 方法先判断当前 token 是否匹配，
+     * <pre>
+     * {@link Parser} 的实际工作类，表示了我们的 BNF，以下面的 BNF 为例：
+     *     {@code
+     *          rule().or(statement, rule(NullStatement.class))
+     *                .sep(";", Token.EOL);
+     *     }
+     *
+     * 在整个解析器中，我们其实包含了两个元素：
+     *
+     * 1. 表示 or(statement, rule(NullStatement.class)) 的 Element
+     * 2. 表示 sep(";", Token.EOL); 的 Element
+     *
+     * 按照我们的 BNF 的定义，我们首先使用第一个 Element 去解析第一个表达式，
+     * 并用过解析剩余的 token 继续解析第二个表达式。
+     *
+     * 在解析的过程中，我们必须使用 {@link Element#match(Lexer)} 方法先判断当前 token 是否匹配，
      * 随后调用 {@link Element#parse(Lexer, List)} 进行实际的解析；
+     * </pre>
      */
     protected static abstract class Element {
 
@@ -46,11 +62,11 @@ public class Parser {
         protected abstract boolean match(Lexer lexer) throws ParseException;
     }
 
-    protected static class Tree extends Element {
+    protected static class TreeElement extends Element {
 
         protected Parser parser;
 
-        protected Tree(Parser p) {
+        protected TreeElement(Parser p) {
             parser = p;
         }
 
@@ -67,11 +83,11 @@ public class Parser {
         }
     }
 
-    protected static class OrTree extends Element {
+    protected static class OrTreeElement extends Element {
 
         protected Parser[] parsers;
 
-        protected OrTree(Parser[] p) {
+        protected OrTreeElement(Parser[] p) {
             parsers = p;
         }
 
@@ -110,12 +126,12 @@ public class Parser {
         }
     }
 
-    protected static class Repeat extends Element {
+    protected static class RepeatElement extends Element {
 
         protected Parser  parser;
         protected boolean onlyOnce;
 
-        protected Repeat(Parser p, boolean once) {
+        protected RepeatElement(Parser p, boolean once) {
             parser = p;
             onlyOnce = once;
         }
@@ -140,11 +156,11 @@ public class Parser {
         }
     }
 
-    protected static abstract class AToken extends Element {
+    protected static abstract class ATokenElement extends Element {
 
         protected Factory factory;
 
-        protected AToken(Class<? extends AbstractSyntaxLeaf> type) {
+        protected ATokenElement(Class<? extends AbstractSyntaxLeaf> type) {
             if (type == null) {
                 type = AbstractSyntaxLeaf.class;
             }
@@ -171,11 +187,11 @@ public class Parser {
         protected abstract boolean test(Token t);
     }
 
-    protected static class IdToken extends AToken {
+    protected static class IdTokenElement extends ATokenElement {
 
         HashSet<String> reserved;
 
-        protected IdToken(Class<? extends AbstractSyntaxLeaf> type, HashSet<String> r) {
+        protected IdTokenElement(Class<? extends AbstractSyntaxLeaf> type, HashSet<String> r) {
             super(type);
             reserved = r != null ? r : new HashSet<String>();
         }
@@ -186,9 +202,9 @@ public class Parser {
         }
     }
 
-    protected static class NumToken extends AToken {
+    protected static class NumTokenElement extends ATokenElement {
 
-        protected NumToken(Class<? extends AbstractSyntaxLeaf> type) {
+        protected NumTokenElement(Class<? extends AbstractSyntaxLeaf> type) {
             super(type);
         }
 
@@ -198,9 +214,9 @@ public class Parser {
         }
     }
 
-    protected static class StrToken extends AToken {
+    protected static class StrTokenElement extends ATokenElement {
 
-        protected StrToken(Class<? extends AbstractSyntaxLeaf> type) {
+        protected StrTokenElement(Class<? extends AbstractSyntaxLeaf> type) {
             super(type);
         }
 
@@ -210,11 +226,11 @@ public class Parser {
         }
     }
 
-    protected static class Leaf extends Element {
+    protected static class LeafElement extends Element {
 
         protected String[] tokens;
 
-        protected Leaf(String[] pat) {
+        protected LeafElement(String[] pat) {
             tokens = pat;
         }
 
@@ -257,9 +273,9 @@ public class Parser {
         }
     }
 
-    protected static class Skip extends Leaf {
+    protected static class SkipElement extends LeafElement {
 
-        protected Skip(String[] t) {
+        protected SkipElement(String[] t) {
             super(t);
         }
 
@@ -279,6 +295,9 @@ public class Parser {
         }
     }
 
+    /**
+     * 操作符
+     */
     public static class Operators extends HashMap<String, Precedence> {
 
         public static boolean LEFT  = true;
@@ -289,14 +308,14 @@ public class Parser {
         }
     }
 
-    protected static class Expr extends Element {
+    protected static class ExprElement extends Element {
 
         protected Factory   factory;
         protected Operators ops;
         protected Parser    factor;
 
-        protected Expr(Class<? extends AbstractSyntaxTree> clazz, Parser exp,
-                       Operators map) {
+        protected ExprElement(Class<? extends AbstractSyntaxTree> clazz, Parser exp,
+                              Operators map) {
             factory = Factory.getForAbstractSyntaxList(clazz);
             ops = map;
             factor = exp;
@@ -366,9 +385,9 @@ public class Parser {
          *
          * make 方法在一下几个位置调用：
          * <br />
-         * {@link AToken#parse(Lexer, List)}
+         * {@link ATokenElement#parse(Lexer, List)}
          * <br />
-         * {@link Expr#doShift(Lexer, AbstractSyntaxTree, int)}
+         * {@link ExprElement#doShift(Lexer, AbstractSyntaxTree, int)}
          * <br />
          * {@link Parser#parse(Lexer)}
          * <br />
@@ -506,6 +525,13 @@ public class Parser {
         return factory.make(results);
     }
 
+    /**
+     * <pre>
+     * 再回想下我们对 {@link Element} 的定义，其实 elements 表示的就是一个合法的 BNF。
+     * 所以我们只需要判断第一个 element 是否匹配即可。
+     * 如果这个 element 是一个 {@link OrTreeElement}，那么它也会有自己的判断方法。
+     * </pre>
+     */
     protected boolean match(Lexer lexer) throws ParseException {
         if (elements.size() == 0) {
             return true;
@@ -519,16 +545,18 @@ public class Parser {
      * 创建parser对象，parser 对象内部的 factory 提供的 make 方法可以构建一个 AST
      * 由于没有提供 clazz，所以 make 方法的实现是根据 {@link Factory#make(Object)}
      */
-    public static Parser rule() {
-        return rule(null);
+    public static Parser rule(String name) {
+        return rule(name, null);
     }
 
     /**
      * 创建parser对象，parser对象内部包含了一个 factory，这个 factory 的 make 方法可以构建一个 AST
      * make 方法会基于 clazz 方法内部提供的 create(List.class) 方法来构造一个 AST
      */
-    public static Parser rule(Class<? extends AbstractSyntaxTree> clazz) {
-        return new Parser(clazz);
+    public static Parser rule(String name, Class<? extends AbstractSyntaxTree> clazz) {
+        Parser p = new Parser(clazz);
+        p.name = name;
+        return p;
     }
 
     public Parser reset() {
@@ -557,7 +585,7 @@ public class Parser {
      * @return parser
      */
     public Parser number(Class<? extends AbstractSyntaxLeaf> clazz) {
-        elements.add(new NumToken(clazz));
+        elements.add(new NumTokenElement(clazz));
         return this;
     }
 
@@ -577,7 +605,7 @@ public class Parser {
      */
     public Parser identifier(Class<? extends AbstractSyntaxLeaf> clazz,
                              HashSet<String> reserved) {
-        elements.add(new IdToken(clazz, reserved));
+        elements.add(new IdTokenElement(clazz, reserved));
         return this;
     }
 
@@ -596,7 +624,7 @@ public class Parser {
      * @return parser
      */
     public Parser string(Class<? extends AbstractSyntaxLeaf> clazz) {
-        elements.add(new StrToken(clazz));
+        elements.add(new StrTokenElement(clazz));
         return this;
     }
 
@@ -606,7 +634,7 @@ public class Parser {
      * @return parser
      */
     public Parser token(String... pat) {
-        elements.add(new Leaf(pat));
+        elements.add(new LeafElement(pat));
         return this;
     }
 
@@ -616,7 +644,7 @@ public class Parser {
      * @return parser
      */
     public Parser sep(String... pat) {
-        elements.add(new Skip(pat));
+        elements.add(new SkipElement(pat));
         return this;
     }
 
@@ -626,7 +654,7 @@ public class Parser {
      * @return parser
      */
     public Parser ast(Parser p) {
-        elements.add(new Tree(p));
+        elements.add(new TreeElement(p));
         return this;
     }
 
@@ -636,7 +664,7 @@ public class Parser {
      * @return parser
      */
     public Parser or(Parser... p) {
-        elements.add(new OrTree(p));
+        elements.add(new OrTreeElement(p));
         return this;
     }
 
@@ -648,7 +676,7 @@ public class Parser {
     public Parser maybe(Parser p) {
         Parser p2 = new Parser(p);
         p2.reset();
-        elements.add(new OrTree(new Parser[]{p, p2}));
+        elements.add(new OrTreeElement(new Parser[]{p, p2}));
         return this;
     }
 
@@ -658,7 +686,7 @@ public class Parser {
      * @return parser
      */
     public Parser option(Parser p) {
-        elements.add(new Repeat(p, true));
+        elements.add(new RepeatElement(p, true));
         return this;
     }
 
@@ -668,7 +696,7 @@ public class Parser {
      * @return parser
      */
     public Parser repeat(Parser p) {
-        elements.add(new Repeat(p, false));
+        elements.add(new RepeatElement(p, false));
         return this;
     }
 
@@ -678,7 +706,7 @@ public class Parser {
      * @return parser
      */
     public Parser expression(Parser subexp, Operators operators) {
-        elements.add(new Expr(null, subexp, operators));
+        elements.add(new ExprElement(null, subexp, operators));
         return this;
     }
 
@@ -689,7 +717,7 @@ public class Parser {
      */
     public Parser expression(Class<? extends AbstractSyntaxTree> clazz, Parser subexp,
                              Operators operators) {
-        elements.add(new Expr(clazz, subexp, operators));
+        elements.add(new ExprElement(clazz, subexp, operators));
         return this;
     }
 
@@ -698,13 +726,17 @@ public class Parser {
      */
     public Parser insertChoice(Parser p) {
         Element e = elements.get(0);
-        if (e instanceof OrTree) {
-            ((OrTree) e).insert(p);
+        if (e instanceof OrTreeElement) {
+            ((OrTreeElement) e).insert(p);
         } else {
             Parser otherwise = new Parser(this);
             reset(null);
             or(p, otherwise);
         }
         return this;
+    }
+
+    public String getName() {
+        return name;
     }
 }

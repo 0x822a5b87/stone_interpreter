@@ -5,6 +5,8 @@ import static com.xxx.stone.Parser.rule;
 import com.xxx.stone.Lexer;
 import com.xxx.stone.ParseException;
 import com.xxx.stone.Parser;
+import com.xxx.stone.interpreter.BasicEnvironment;
+import com.xxx.stone.interpreter.Environment;
 import java.io.StringReader;
 
 /**
@@ -41,27 +43,29 @@ import java.io.StringReader;
 public class FuncParser extends BasicParser {
 
     public static String FUNC_CODE = "def run(i) {\n"
-                                     + "    \n"
-                                     + "}";
+                                     + "    i = 10\n"
+                                     + "}\n"
+                                     + "run(10)\n"
+                                     + "(1 + 2 + 3)";
 
-    Parser param = rule().identifier(reserved);
+    Parser param = rule("param").identifier(reserved);
 
-    Parser params = rule(ParameterList.class)
-            .ast(param).repeat(rule().sep(",").ast(param));
+    Parser params = rule("params", ParameterList.class)
+            .ast(param).repeat(rule("params01").sep(",").ast(param));
 
     /**
      * 这里不需要 rule(ParameterList.class) 是因为 maybe 会把自身的 factory 作为新的 Parser 的工厂类
      */
-    Parser paramList = rule()
+    Parser paramList = rule("paramList")
             .sep("(").maybe(params).sep(")");
 
-    Parser def = rule(DefStatement.class)
+    Parser def = rule("def", DefStatement.class)
             .sep("def").identifier(reserved).ast(paramList).ast(block);
 
-    Parser args = rule(Arguments.class)
-            .ast(expr).repeat(rule().sep(",").ast(expr));
+    Parser args = rule("args", Arguments.class)
+            .ast(expr).repeat(rule("args01").sep(",").ast(expr));
 
-    Parser postfix = rule().sep("(").maybe(args).sep(")");
+    Parser postfix = rule("postfix").sep("(").maybe(args).sep(")");
 
     public FuncParser() {
         reserved.add("(");
@@ -75,10 +79,15 @@ public class FuncParser extends BasicParser {
 
     public static void main(String[] args) throws ParseException {
         Lexer lexer = new Lexer(new StringReader(FUNC_CODE));
-        FuncParser basicParser = new FuncParser();
+        FuncParser funcParser = new FuncParser();
+        Environment environment = new BasicEnvironment();
         while (lexer.peek(0) != Token.EOF) {
-            AbstractSyntaxTree t = basicParser.basicParse(lexer);
-            System.out.println("=> " + t.toString());
+            AbstractSyntaxTree t = funcParser.basicParse(lexer);
+            try {
+                System.out.println(t.eval(environment));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

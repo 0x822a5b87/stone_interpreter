@@ -12,7 +12,7 @@ public class BasicEnvironment implements Environment {
 
     protected Map<String, Object> values;
 
-    protected BasicEnvironment() {
+    public BasicEnvironment() {
         values = new HashMap<>();
     }
 
@@ -24,5 +24,20 @@ public class BasicEnvironment implements Environment {
     @Override
     public Object get(String name) {
         return values.get(name);
+    }
+
+    @Override
+    public void putNew(String name, Object value) {
+
+    }
+
+    @Override
+    public Environment where(String name) {
+        return null;
+    }
+
+    @Override
+    public void setOuter(Environment e) {
+
     }
 }

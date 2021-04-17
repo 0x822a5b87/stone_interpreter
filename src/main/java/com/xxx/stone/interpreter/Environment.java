@@ -17,15 +17,37 @@ public interface Environment {
 
     /**
      * 为 env 添加数据
-     * @param name      变量名
-     * @param value     变量值
+     *
+     * @param name 变量名
+     * @param value 变量值
      */
     void put(String name, Object value);
 
     /**
      * 从 env 获取数据
+     *
      * @param name 变量名
-     * @return     变量值
+     * @return 变量值
      */
     Object get(String name);
+
+    /**
+     * 增加新的变量
+     * @param name  name
+     * @param value value
+     */
+    void putNew(String name, Object value);
+
+    /**
+     * 查找变量所在的 env
+     * @param name name
+     * @return     变量所在的 env
+     */
+    Environment where(String name);
+
+    /**
+     * 设置外层 env
+     * @param e 外层env
+     */
+    void setOuter(Environment e);
 }

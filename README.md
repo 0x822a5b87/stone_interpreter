@@ -60,15 +60,23 @@ integer = "0" | [ "-" ], natural number ;
 ## stone EBNF
 
 ```
-primary:	"(" expr ")" | NUMBER | IDENTIFIER | STRING
-factor:		"-" primary | primary
-expr:		factor { OP factor }
-block:		"{" [ statement ] {(";" | EOL) [ statement ]} "}"
-simple:		expr
-statement:	"if" expr block ["else" block]
-				| "while" expr block
-				| simple
-program:	[ statement ] (";" | EOL)
+primary:    "(" expr ")" | NUMBER | IDENTIFIER | STRING
+factor:        "-" primary | primary
+expr:        factor { OP factor }
+block:        "{" [ statement ] {(";" | EOL) [ statement ]} "}"
+statement:    "if" expr block ["else" block]
+| "while" expr block
+| simple
+ 
+param: IDENTIFIER
+params: IDENTIFIER { "," params }
+param_list: "(" [ params ] ")"
+def: "def" IDENTIFIER param_list block
+args: expr { "," expr }
+postfix: "(" args ")"
+primary:    ("(" expr ")" | NUMBER | IDENTIFIER | STRING) { postfix }
+simple: expr [ args ]
+program: [ def | statemen ] ( ";" | EOL )
 ```
 
 

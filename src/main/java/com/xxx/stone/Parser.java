@@ -425,6 +425,7 @@ public class Parser {
          * @param clazz
          * @return
          */
+        @SuppressWarnings("unchecked")
         protected static Factory getForAbstractSyntaxList(Class<? extends AbstractSyntaxTree> clazz) {
             Factory f = get(clazz, List.class);
             if (f == null) {

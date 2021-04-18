@@ -37,7 +37,7 @@ public class Parser {
      * 并用过解析剩余的 token 继续解析第二个表达式。
      *
      * 在解析的过程中，我们必须使用 {@link Element#match(Lexer)} 方法先判断当前 token 是否匹配，
-     * 随后调用 {@link Element#parse(Lexer, List)} 进行实际的解析；
+     * 随后调用 {@link Element#elementParse(Lexer, List)} 进行实际的解析；
      * </pre>
      */
     protected static abstract class Element {
@@ -49,7 +49,7 @@ public class Parser {
          * @param res 抽象语法树
          * @throws ParseException parser异常
          */
-        protected abstract void parse(Lexer lexer, List<AbstractSyntaxTree> res)
+        protected abstract void elementParse(Lexer lexer, List<AbstractSyntaxTree> res)
                 throws ParseException;
 
         /**
@@ -71,7 +71,7 @@ public class Parser {
         }
 
         @Override
-        protected void parse(Lexer lexer, List<AbstractSyntaxTree> res)
+        protected void elementParse(Lexer lexer, List<AbstractSyntaxTree> res)
                 throws ParseException {
             AbstractSyntaxTree ast = parser.parse(lexer);
             res.add(ast);
@@ -92,7 +92,7 @@ public class Parser {
         }
 
         @Override
-        protected void parse(Lexer lexer, List<AbstractSyntaxTree> res)
+        protected void elementParse(Lexer lexer, List<AbstractSyntaxTree> res)
                 throws ParseException {
             Parser p = choose(lexer);
             if (p == null) {
@@ -137,7 +137,7 @@ public class Parser {
         }
 
         @Override
-        protected void parse(Lexer lexer, List<AbstractSyntaxTree> res)
+        protected void elementParse(Lexer lexer, List<AbstractSyntaxTree> res)
                 throws ParseException {
             while (parser.match(lexer)) {
                 AbstractSyntaxTree t = parser.parse(lexer);
@@ -168,7 +168,7 @@ public class Parser {
         }
 
         @Override
-        protected void parse(Lexer lexer, List<AbstractSyntaxTree> res)
+        protected void elementParse(Lexer lexer, List<AbstractSyntaxTree> res)
                 throws ParseException {
             Token t = lexer.read();
             if (test(t)) {
@@ -235,7 +235,7 @@ public class Parser {
         }
 
         @Override
-        protected void parse(Lexer lexer, List<AbstractSyntaxTree> res)
+        protected void elementParse(Lexer lexer, List<AbstractSyntaxTree> res)
                 throws ParseException {
             Token t = lexer.read();
             if (t.isIdentifier()) {
@@ -322,7 +322,7 @@ public class Parser {
         }
 
         @Override
-        public void parse(Lexer lexer, List<AbstractSyntaxTree> res) throws ParseException {
+        public void elementParse(Lexer lexer, List<AbstractSyntaxTree> res) throws ParseException {
             AbstractSyntaxTree right = factor.parse(lexer);
             Precedence prec;
             while ((prec = nextOperator(lexer)) != null) {
@@ -385,7 +385,7 @@ public class Parser {
          *
          * make 方法在一下几个位置调用：
          * <br />
-         * {@link ATokenElement#parse(Lexer, List)}
+         * {@link ATokenElement#elementParse(Lexer, List)}
          * <br />
          * {@link ExprElement#doShift(Lexer, AbstractSyntaxTree, int)}
          * <br />
@@ -519,7 +519,7 @@ public class Parser {
     public AbstractSyntaxTree parse(Lexer lexer) throws ParseException {
         ArrayList<AbstractSyntaxTree> results = new ArrayList<AbstractSyntaxTree>();
         for (Element e : elements) {
-            e.parse(lexer, results);
+            e.elementParse(lexer, results);
         }
 
         return factory.make(results);

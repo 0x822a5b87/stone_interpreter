@@ -11,18 +11,34 @@ import java.util.HashSet;
 
 /**
  * @author 0x822a5b87
- *
- *         basic parser
+ *         基于 {@link com.xxx.stone.ast.BasicParser} 扩展，增加函数解析功能
  *
  *         primary:    "(" expr ")" | NUMBER | IDENTIFIER | STRING
  *         factor:        "-" primary | primary
  *         expr:        factor { OP factor }
  *         block:        "{" [ statement ] {(";" | EOL) [ statement ]} "}"
- *         simple:        expr
  *         statement:    "if" expr block ["else" block]
  *         | "while" expr block
  *         | simple
- *         program:    [ statement ] (";" | EOL)
+ *
+ *         param: IDENTIFIER
+ *         params: IDENTIFIER { "," params }
+ *         param_list: "(" [ params ] ")"
+ *         def: "def" IDENTIFIER param_list block
+ *         args: expr { "," expr }
+ *         postfix: "(" args ")"
+ *         primary:    ("(" expr ")" | NUMBER | IDENTIFIER | STRING) { postfix }
+ *         simple: expr [ args ]
+ *         program: [ def | statemen ] ( ";" | EOL )
+ *
+ *         注意 simple: expr { "(" args ")" } 是不正确的
+ *         但是类似于 fun(10) 的语法仍然可以支持，因为它被匹配成了 primary
+ *
+ *         primary 是基础类型，为了让函数成为一等公民，我们将它也定义成了一种基础类型
+ *
+ *         primary 既可以是 expr 也可以是 factor
+ *
+ *         fun(10) 可以被识别为仅由 expr 构成。
  */
 public class BasicParser {
 
@@ -39,6 +55,10 @@ public class BasicParser {
      */
     Parser exp0 = rule("exp0");
 
+    Parser postfix = rule("postfix");
+    Parser args    = rule("args", Arguments.class);
+    Parser def     = rule("def", DefStatement.class);
+
     /**
      * primary 解析器
      *
@@ -48,10 +68,12 @@ public class BasicParser {
             .or(rule("primary01").sep("(").ast(exp0).sep(")"),
                 rule("primary02").number(NumberLiteral.class),
                 rule("primary03").identifier(Name.class, reserved),
-                rule("primary04").string(StringLiteral.class));
+                rule("primary04").string(StringLiteral.class))
+            .repeat(postfix);
 
-    Parser factor = rule("factor").or(rule("factor01", NegativeExpr.class).sep("-").ast(primary),
-                              primary);
+    Parser factor = rule("factor")
+            .or(rule("factor01", NegativeExpr.class).sep("-").ast(primary),
+                primary);
 
     Parser expr = exp0.expression(BinaryExpr.class, factor, operators);
 
@@ -65,7 +87,7 @@ public class BasicParser {
             .repeat(rule("block01").sep(";", Token.EOL).option(statement0))
             .sep("}");
 
-    Parser simple = rule("simple", PrimaryExpr.class).ast(expr);
+    Parser simple = rule("simple", PrimaryExpr.class).ast(expr).option(args);
 
     /**
      * statement:    "if" expr block ["else" block]
@@ -73,9 +95,9 @@ public class BasicParser {
      * | simple
      */
     Parser statement = statement0.or(
-            rule("statement", IfStatement.class).sep("if").ast(expr).ast(block)
-                    .option(rule("statement01").sep("else").ast(block)),
-            rule("statement02", WhileStatement.class).sep("while").ast(expr).ast(block),
+            rule("statement0-IfStatement", IfStatement.class).sep("if").ast(expr).ast(block)
+                    .option(rule("statement0-else").sep("else").ast(block)),
+            rule("statement0-WhileStatement", WhileStatement.class).sep("while").ast(expr).ast(block),
             simple
     );
 
@@ -90,13 +112,33 @@ public class BasicParser {
      * program 或者是一颗 statement 语法树，或者是一个 NullStatement 节点。
      */
 
-    Parser program = rule("program").or(statement, rule("program01", NullStatement.class))
+    Parser program = rule("program")
+            .or(def, statement, rule("program01", NullStatement.class))
             .sep(";", Token.EOL);
 
+    Parser param = rule("param").identifier(reserved);
+
+    Parser params = rule("params", ParameterList.class)
+            .ast(param).repeat(rule("params01").sep(",").ast(param));
+
+    /**
+     * 这里不需要 rule(ParameterList.class) 是因为 maybe 会把自身的 factory 作为新的 Parser 的工厂类
+     */
+    Parser paramList = rule("paramList")
+            .sep("(").maybe(params).sep(")");
+
     public BasicParser() {
+        postfix.sep("(").maybe(args).sep(")");
+        args.ast(expr).repeat(rule("args01").sep(",").ast(expr));
+        def.sep("def").identifier(reserved).ast(paramList).ast(block);
+
         reserved.add(";");
         reserved.add("{");
         reserved.add("}");
+        reserved.add("(");
+        reserved.add(")");
+        reserved.add("def");
+
         reserved.add(Token.EOL);
 
         operators.add("=", 1, Operators.RIGHT);

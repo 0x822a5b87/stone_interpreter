@@ -1,5 +1,6 @@
 package com.xxx.stone.ast;
 
+import com.xxx.stone.interpreter.Environment;
 import java.util.List;
 
 /**
@@ -17,5 +18,9 @@ public class ParameterList extends AbstractSyntaxList {
 
     public int size() {
         return numChildren();
+    }
+
+    public void eval(Environment env, int index, Object value) {
+        env.putNew(name(index), value);
     }
 }

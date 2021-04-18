@@ -28,12 +28,14 @@ public class NestedEnvironment implements Environment {
 
     @Override
     public Object get(String name) {
-        Environment env = where(name);
-        if (env != null) {
-            return env.get(name);
-        } else {
+        Object o = values.get(name);
+        if (o != null) {
+            return o;
+        }
+        if (outer == null) {
             return null;
         }
+        return outer.get(name);
     }
 
     @Override

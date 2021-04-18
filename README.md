@@ -2,9 +2,18 @@
 
 stone_interpreter
 
+## run
+
+```bash
+# compile
+mvn clean package
+# run
+java -cp target/stone_interpreter-1.0-SNAPSHOT.jar com.xxx.stone.StdInParser < counter.stone
+```
+
 ## BNF
 
-```
+```EBNF
 factor: 	NUMBER | "(" expression ")"
 term:		factor { ("*" | "/") factor }
 expression:	term { ("+" | "-") term }
@@ -78,5 +87,3 @@ primary:    ("(" expr ")" | NUMBER | IDENTIFIER | STRING) { postfix }
 simple: expr [ args ]
 program: [ def | statemen ] ( ";" | EOL )
 ```
-
-

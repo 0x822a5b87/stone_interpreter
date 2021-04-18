@@ -1,7 +1,5 @@
 package com.xxx.stone.interpreter;
 
-import javassist.gluonj.Reviser;
-
 /**
  * 执行器，用于计算AST上每一个节点的结果
  *
@@ -9,7 +7,6 @@ import javassist.gluonj.Reviser;
  *
  * @author 0x822a5b87
  */
-@Reviser
 public class BasicEvaluator {
 
     public static final int TRUE  = 1;

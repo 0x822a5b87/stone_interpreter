@@ -1,6 +1,7 @@
 package com.xxx.stone.ast;
 
 import com.xxx.stone.ParseException;
+import java.io.IOException;
 
 /**
  * <pre>
@@ -60,7 +61,7 @@ public class FuncParser extends BasicParser {
                                     + "fib(10)";
 
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, IOException {
         FuncParser parser = new FuncParser();
         parser.run(DEF_CODE);
         parser.run(FIB_CODE);

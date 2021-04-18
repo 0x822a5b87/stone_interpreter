@@ -1,6 +1,7 @@
 package com.xxx.stone.ast;
 
 import com.xxx.stone.ParseException;
+import java.io.IOException;
 
 /**
  * @author 0x822a5b87
@@ -22,8 +23,9 @@ public class ClosureParser extends FuncParser {
             + "c1()\n"
             + "c2()";
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, IOException {
         ClosureParser closureParser = new ClosureParser();
         closureParser.run(CLOSURE_CODE);
+        System.out.println(CLOSURE_CODE);
     }
 }

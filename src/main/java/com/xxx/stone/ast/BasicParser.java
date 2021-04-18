@@ -12,6 +12,9 @@ import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.interpreter.NestedEnvironment;
 import java.io.StringReader;
 import java.util.HashSet;
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.Ansi.Color;
+import org.fusesource.jansi.AnsiConsole;
 
 /**
  * @author 0x822a5b87
@@ -174,19 +177,23 @@ public class BasicParser {
     }
 
     public void run(String code) throws ParseException {
-        System.out.println("========================");
-        System.out.println("execute code :");
-        System.out.println(code);
-        System.out.println("========================");
+        AnsiConsole.systemInstall();
+        System.out.println(Ansi.ansi().eraseScreen().fg(Color.GREEN).a("========================").reset());
+        System.out.println(Ansi.ansi().fg(Color.GREEN).a(code).reset());
+        System.out.println(Ansi.ansi().fg(Color.GREEN).a("========================").reset());
         Lexer lexer = new Lexer(new StringReader(code));
         Environment global = new NestedEnvironment(null);
         while (lexer.peek(0) != Token.EOF) {
             AbstractSyntaxTree t = basicParse(lexer);
             try {
-                System.out.println(t.eval(global));
+                System.out.println(Ansi.ansi()
+                                           .fg(Color.MAGENTA).a("console: ")
+                                           .fg(Color.RED).a(t.eval(global))
+                                           .reset());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        AnsiConsole.systemUninstall();
     }
 }

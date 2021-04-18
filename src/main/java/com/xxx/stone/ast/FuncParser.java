@@ -1,12 +1,6 @@
 package com.xxx.stone.ast;
 
-import static com.xxx.stone.Parser.rule;
-
-import com.xxx.stone.Lexer;
 import com.xxx.stone.ParseException;
-import com.xxx.stone.interpreter.Environment;
-import com.xxx.stone.interpreter.NestedEnvironment;
-import java.io.StringReader;
 
 /**
  * <pre>
@@ -46,7 +40,7 @@ import java.io.StringReader;
  */
 public class FuncParser extends BasicParser {
 
-    public static String CLOSURE_CODE =
+    public static String DEF_CODE =
             "def closure(i) {\n"
             + "    i = i + 10\n"
             + "}\n"
@@ -65,26 +59,10 @@ public class FuncParser extends BasicParser {
                                     + "}\n"
                                     + "fib(10)";
 
-    public static void run(String code) throws ParseException {
-        System.out.println("========================");
-        System.out.println("execute code :" );
-        System.out.println(code);
-        System.out.println("========================");
-        Lexer lexer = new Lexer(new StringReader(code));
-        FuncParser funcParser = new FuncParser();
-        Environment global = new NestedEnvironment(null);
-        while (lexer.peek(0) != Token.EOF) {
-            AbstractSyntaxTree t = funcParser.basicParse(lexer);
-            try {
-                System.out.println(t.eval(global));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     public static void main(String[] args) throws ParseException {
-        run(CLOSURE_CODE);
-        run(FIB_CODE);
+        FuncParser parser = new FuncParser();
+        parser.run(DEF_CODE);
+        parser.run(FIB_CODE);
     }
 }

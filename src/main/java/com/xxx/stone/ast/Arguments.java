@@ -17,7 +17,7 @@ public class Arguments extends Postfix {
     /**
      * <pre>
      * 函数的执行有几个不同的环境：
-     * 1. 执行 {@link Function#Function(ParameterList, BlockStatement, Environment)} 传入的 env，
+     * 1. 执行 {@link Function#Function(String, ParameterList, BlockStatement, Environment)} 传入的 env，
      *    由于 stone 不支持在函数中定义函数，所以一般都对应全局作用域
      * 2. 执行 {@link Arguments#eval(Environment, Object)} 时传入的 callerEnv，用于计算实参
      * 3. 函数自身的 env，这个 env 用于记录局部变量。
@@ -39,8 +39,8 @@ public class Arguments extends Postfix {
         }
         Environment funcEnv = func.makeEnv();
         int num = 0;
-        for (AbstractSyntaxTree a : this) {
-            parameters.eval(funcEnv, num++, a.eval(callerEnv));
+        for (AbstractSyntaxTree arg : this) {
+            parameters.eval(funcEnv, num++, arg.eval(callerEnv));
         }
         return (func.body()).eval(funcEnv);
     }

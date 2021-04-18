@@ -1,10 +1,7 @@
 package com.xxx.stone.ast;
 
-import com.sun.java.swing.action.OpenAction;
 import com.xxx.stone.Parser;
-import com.xxx.stone.func.Function;
 import com.xxx.stone.interpreter.Environment;
-import com.xxx.stone.interpreter.NestedEnvironment;
 import java.util.List;
 
 /**
@@ -20,7 +17,6 @@ import java.util.List;
  * 括号括起来的 {@link  BasicParser#expr}, {@link BasicParser#simple}
  * <br/>
  * 其中 {@link BasicParser#expr} 和 {@link BasicParser#simple} 都是多元操作符
- * 另外，由于在 {@link FuncParser#FuncParser()} 中扩展了 simple 和 primary，
  * 所以它也可能是一个函数调用。
  * <br/>
  * 前面三种类型都是终结符，后面则不是。

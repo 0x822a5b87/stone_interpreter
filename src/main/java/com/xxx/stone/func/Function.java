@@ -12,14 +12,17 @@ import com.xxx.stone.interpreter.NestedEnvironment;
  */
 public class Function {
 
+    protected String name;
+
     protected ParameterList  parameters;
     protected BlockStatement body;
-    protected Environment    env;
+    protected Environment    callerEnv;
 
-    public Function(ParameterList parameters, BlockStatement body, Environment env) {
+    public Function(String name, ParameterList parameters, BlockStatement body, Environment callerEnv) {
+        this.name = name;
         this.parameters = parameters;
         this.body = body;
-        this.env = env;
+        this.callerEnv = callerEnv;
     }
 
     public ParameterList parameters() {
@@ -31,11 +34,11 @@ public class Function {
     }
 
     public Environment makeEnv() {
-        return new NestedEnvironment(env);
+        return new NestedEnvironment(callerEnv);
     }
 
     @Override
     public String toString() {
-        return "<fun:" + hashCode() + ">";
+        return "<fun:[" + name + "]:" + hashCode() + ">";
     }
 }

@@ -32,7 +32,7 @@ public class DefStatement extends AbstractSyntaxList {
 
     @Override
     public Object eval(Environment env) {
-        env.putNew(name(), new Function(parameters(), body(), env));
+        env.putNew(name(), new Function(name(), parameters(), body(), env));
         return "<func: [" + name() + "]>";
     }
 }

@@ -8,7 +8,7 @@
 # compile
 mvn clean package
 # run
-java -cp target/stone_interpreter-1.0-SNAPSHOT.jar com.xxx.stone.StdInParser < counter.stone
+java -cp target/stone_interpreter-1.0-SNAPSHOT-jar-with-dependencies.jar com.xxx.stone.StdInParser < counter.stone
 ```
 
 ## BNF

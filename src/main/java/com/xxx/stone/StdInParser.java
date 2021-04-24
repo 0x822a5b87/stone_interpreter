@@ -1,6 +1,6 @@
 package com.xxx.stone;
 
-import com.xxx.stone.ast.ClosureParser;
+import com.xxx.stone.nat1ve.NativeParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 /**
  * @author 0x822a5b87
  */
-public class StdInParser extends ClosureParser {
+public class StdInParser extends NativeParser {
 
     BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 

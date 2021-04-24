@@ -49,7 +49,7 @@ import org.fusesource.jansi.AnsiConsole;
  */
 public class BasicParser {
 
-    HashSet<String> reserved = new HashSet<String>();
+    HashSet<String> reserved = new HashSet<>();
 
     Operators operators = new Operators();
 
@@ -176,13 +176,12 @@ public class BasicParser {
         return program.parse(lexer);
     }
 
-    public void run(String code) throws ParseException {
+    public void run(Environment global, String code) throws ParseException {
         AnsiConsole.systemInstall();
         System.out.println(Ansi.ansi().eraseScreen().fg(Color.GREEN).a("========================").reset());
         System.out.println(Ansi.ansi().fg(Color.GREEN).a(code).reset());
         System.out.println(Ansi.ansi().fg(Color.GREEN).a("========================").reset());
         Lexer lexer = new Lexer(new StringReader(code));
-        Environment global = new NestedEnvironment(null);
         while (lexer.peek(0) != Token.EOF) {
             AbstractSyntaxTree t = basicParse(lexer);
             try {
@@ -195,5 +194,10 @@ public class BasicParser {
             }
         }
         AnsiConsole.systemUninstall();
+    }
+
+    public void run(String code) throws ParseException {
+        Environment global = new NestedEnvironment(null);
+        run(global, code);
     }
 }

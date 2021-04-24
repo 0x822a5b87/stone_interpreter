@@ -228,14 +228,6 @@ public class BasicParser {
         Lexer lexer = new Lexer(new StringReader(code));
         while (lexer.peek(0) != Token.EOF) {
             AbstractSyntaxTree t = basicParse(lexer);
-            try {
-                System.out.println(Ansi.ansi()
-                                           .fg(Color.MAGENTA).a("console: ")
-                                           .fg(Color.RED).a(t.eval(global))
-                                           .reset());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
         AnsiConsole.systemUninstall();
     }

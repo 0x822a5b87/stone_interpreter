@@ -26,6 +26,5 @@ public class ClosureParser extends FuncParser {
     public static void main(String[] args) throws ParseException, IOException {
         ClosureParser closureParser = new ClosureParser();
         closureParser.run(CLOSURE_CODE);
-        System.out.println(CLOSURE_CODE);
     }
 }

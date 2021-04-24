@@ -37,6 +37,5 @@ public class NativeParser extends ClosureParser {
     public static void main(String[] args) throws ParseException, IOException {
         NativeParser nativeParser = new NativeParser();
         nativeParser.run(NATIVE_CODE);
-        System.out.println(NATIVE_CODE);
     }
 }

@@ -11,6 +11,29 @@ mvn clean package
 java -cp target/stone_interpreter-1.0-SNAPSHOT-jar-with-dependencies.jar com.xxx.stone.StdInParser < counter.stone
 ```
 
+## stone EBNF
+
+```EBNF
+primary     ::= ("fun" param_list block | "(" expr ")" | NUMBER | IDENTIFIER | STRING) { postfix }
+factor      ::= "-" primary | primary
+expr        ::= factor { OP factor }
+block       ::= "{" [ statement ] {(";" | EOL) [ statement ]} "}"
+statement   ::= "if" expr block ["else" block]
+                      | "while" expr block
+                      | simple
+param       ::= IDENTIFIER
+params      ::= IDENTIFIER { "," param }
+param_list  ::= "(" [ params ] ")"
+def         ::= "def" IDENTIFIER param_list block
+args        ::= expr { "," expr }
+simple      ::= expr [ args ]
+member      ::= def | simple
+class_body  ::= "{" [ member] { (";" | EOL) | [ member ] } "}"
+defClass    ::= "class" IDENTIFIER [ "extends" IDENTIFIER] class_body
+postfix     ::= "." IDENTIFIER | "(" args ")"
+program     ::= [ def | statement | defClass ] ( ";" | EOL )
+```
+
 ## BNF
 
 ```EBNF
@@ -64,27 +87,4 @@ An option can be represented through squared brackets [ ... ]. That is, everythi
 
 ```EBNF
 integer = "0" | [ "-" ], natural number ;
-```
-
-## stone EBNF
-
-```EBNF
-primary     ::= ("fun" param_list block | "(" expr ")" | NUMBER | IDENTIFIER | STRING) { postfix }
-factor      ::= "-" primary | primary
-expr        ::= factor { OP factor }
-block       ::= "{" [ statement ] {(";" | EOL) [ statement ]} "}"
-statement   ::= "if" expr block ["else" block]
-                      | "while" expr block
-                      | simple
-param       ::= IDENTIFIER
-params      ::= IDENTIFIER { "," param }
-param_list  ::= "(" [ params ] ")"
-def         ::= "def" IDENTIFIER param_list block
-args        ::= expr { "," expr }
-simple      ::= expr [ args ]
-member      ::= def | simple
-class_body  ::= "{" [ member] { (";" | EOL) | [ member ] } "}"
-defClass    ::= "class" IDENTIFIER [ "extends" IDENTIFIER] class_body
-postfix     ::= "." IDENTIFIER | "(" args ")"
-program     ::= [ def | statement | defClass ] ( ";" | EOL )
 ```

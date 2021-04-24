@@ -61,6 +61,8 @@ import org.fusesource.jansi.AnsiConsole;
  */
 public class BasicParser {
 
+    public final static String RESERVED_NEW = "new";
+
     HashSet<String> reserved = new HashSet<>();
 
     Operators operators = new Operators();
@@ -165,10 +167,6 @@ public class BasicParser {
 
         paramList.sep("(").maybe(params).sep(")");
 
-        /*
-         *    postfix: "." IDENTIFIER | "(" args ")"
-         *    program: [ def | statement | defClass ] ( ";" | EOL )
-         */
         postfix.or(rule("postfix-dot", Dot.class).sep(".").identifier(reserved),
                    rule("postfix-args").sep("(").maybe(args).sep(")"));
 
@@ -228,8 +226,24 @@ public class BasicParser {
         Lexer lexer = new Lexer(new StringReader(code));
         while (lexer.peek(0) != Token.EOF) {
             AbstractSyntaxTree t = basicParse(lexer);
+            out(global, t);
         }
         AnsiConsole.systemUninstall();
+    }
+
+    private void out(Environment global, AbstractSyntaxTree t) {
+        try {
+            System.out.println(Ansi.ansi()
+                                       .fg(Color.BLUE).a("ast: ")
+                                       .fg(Color.CYAN).a(t)
+                                       .reset());
+            System.out.println(Ansi.ansi()
+                                       .fg(Color.MAGENTA).a("eval: ")
+                                       .fg(Color.RED).a(t.eval(global))
+                                       .reset());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void run(String code) throws ParseException {

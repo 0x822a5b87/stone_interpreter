@@ -3,7 +3,7 @@ package com.xxx.stone.ast;
 import static com.xxx.stone.interpreter.BasicEvaluator.FALSE;
 import static com.xxx.stone.interpreter.BasicEvaluator.TRUE;
 
-import com.xxx.stone.StoneException;
+import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
 import java.util.List;
 

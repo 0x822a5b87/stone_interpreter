@@ -1,6 +1,6 @@
 package com.xxx.stone.ast;
 
-import com.xxx.stone.StoneException;
+import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.func.Function;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.nat1ve.NativeFunction;

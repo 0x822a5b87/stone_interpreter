@@ -1,6 +1,6 @@
 package com.xxx.stone.nat1ve;
 
-import com.xxx.stone.StoneException;
+import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.ast.AbstractSyntaxTree;
 import java.lang.reflect.Method;
 import lombok.Data;

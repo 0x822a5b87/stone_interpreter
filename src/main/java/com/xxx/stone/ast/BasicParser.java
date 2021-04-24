@@ -10,6 +10,9 @@ import com.xxx.stone.Parser.Operators;
 import com.xxx.stone.func.Closure;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.interpreter.NestedEnvironment;
+import com.xxx.stone.object.ClassBody;
+import com.xxx.stone.object.ClassStatement;
+import com.xxx.stone.object.Dot;
 import java.io.StringReader;
 import java.util.HashSet;
 import org.fusesource.jansi.Ansi;
@@ -17,35 +20,44 @@ import org.fusesource.jansi.Ansi.Color;
 import org.fusesource.jansi.AnsiConsole;
 
 /**
+ * <pre>
+ *    基于 {@link com.xxx.stone.ast.BasicParser} 扩展，增加函数解析功能
+ *
+ * {@code
+ *    primary:    "(" expr ")" | NUMBER | IDENTIFIER | STRING | "fun" param_list block
+ *    factor:        "-" primary | primary
+ *    expr:        factor { OP factor }
+ *    block:        "{" [ statement ] {(";" | EOL) [ statement ]} "}"
+ *    statement:    "if" expr block ["else" block]
+ *                          | "while" expr block
+ *                          | simple
+ *
+ *    param: IDENTIFIER
+ *    params: IDENTIFIER { "," params }
+ *    param_list: "(" [ params ] ")"
+ *    def: "def" IDENTIFIER param_list block
+ *    args: expr { "," expr }
+ *    primary:    ("(" expr ")" | NUMBER | IDENTIFIER | STRING) { postfix }
+ *    simple: expr [ args ]
+ *
+ *    // class 定义
+ *    member: def | simple
+ *    class_body: "{" [ member] { (";" | EOL) | [ member ] } "}"
+ *    defClass: "class" IDENTIFIER [ "extends" IDENTIFIER] class_body
+ *    postfix: "." IDENTIFIER | "(" args ")"
+ *    program: [ def | statement | defClass ] ( ";" | EOL )
+ * }
+ *
+ *    1. 注意 simple: expr { "(" args ")" } 是不正确的但是类似于 fun(10) 的语法仍然可以支持，因为它被匹配成了 primary
+ *    2. primary 是基础类型，为了让函数成为一等公民，我们将它也定义成了一种基础类型
+ *    3. primary 既可以是 expr 也可以是 factor
+ *    4. fun(10) 可以被识别为仅由 expr 构成。
+ *    5. class_body 和 block 是不同的，主要区别在于。
+ *          5.1 class_body 可以使用 def 定义函数
+ *          5.2 block 可以使用 statement（例如 if，while 等语句）
+ *
  * @author 0x822a5b87
- *         基于 {@link com.xxx.stone.ast.BasicParser} 扩展，增加函数解析功能
- *
- *         primary:    "(" expr ")" | NUMBER | IDENTIFIER | STRING | "fun" param_list block
- *         factor:        "-" primary | primary
- *         expr:        factor { OP factor }
- *         block:        "{" [ statement ] {(";" | EOL) [ statement ]} "}"
- *         statement:    "if" expr block ["else" block]
- *         | "while" expr block
- *         | simple
- *
- *         param: IDENTIFIER
- *         params: IDENTIFIER { "," params }
- *         param_list: "(" [ params ] ")"
- *         def: "def" IDENTIFIER param_list block
- *         args: expr { "," expr }
- *         postfix: "(" args ")"
- *         primary:    ("(" expr ")" | NUMBER | IDENTIFIER | STRING) { postfix }
- *         simple: expr [ args ]
- *         program: [ def | statemen ] ( ";" | EOL )
- *
- *         注意 simple: expr { "(" args ")" } 是不正确的
- *         但是类似于 fun(10) 的语法仍然可以支持，因为它被匹配成了 primary
- *
- *         primary 是基础类型，为了让函数成为一等公民，我们将它也定义成了一种基础类型
- *
- *         primary 既可以是 expr 也可以是 factor
- *
- *         fun(10) 可以被识别为仅由 expr 构成。
+ * </pre>
  */
 public class BasicParser {
 
@@ -110,6 +122,12 @@ public class BasicParser {
      */
     Parser paramList = rule("paramList");
 
+    Parser member = rule("member");
+
+    Parser classBody = rule("classBody", ClassBody.class);
+
+    Parser defClass = rule("defClass", ClassStatement.class);
+
     public BasicParser() {
         expr.expression(BinaryExpr.class, factor, operators);
 
@@ -137,20 +155,46 @@ public class BasicParser {
 
         simple.ast(expr).option(args);
 
-        program.or(def, statement, rule("program01", NullStatement.class))
+        /**
+         * {@link defClass} 必须在最前面，否则 class xxx 会被解析成一个普通变量声明
+         */
+        program.or(defClass, def, statement, rule("program01", NullStatement.class))
                 .sep(";", Token.EOL);
 
         params.ast(param).repeat(rule("params01").sep(",").ast(param));
 
         paramList.sep("(").maybe(params).sep(")");
 
-        postfix.sep("(").maybe(args).sep(")");
+        /*
+         *    postfix: "." IDENTIFIER | "(" args ")"
+         *    program: [ def | statement | defClass ] ( ";" | EOL )
+         */
+        postfix.or(rule("postfix-dot", Dot.class).sep(".").identifier(reserved),
+                   rule("postfix-args").sep("(").maybe(args).sep(")"));
 
         args.ast(expr).repeat(rule("args01").sep(",").ast(expr));
 
         def.sep("def").identifier(reserved).ast(paramList).ast(block);
 
         closure.sep("fun").ast(paramList).ast(block);
+
+        member.or(def, simple);
+
+        /*
+         * class_body: "{" [ member] { (";" | EOL) | [ member ] } "}"
+         */
+        classBody.sep("{")
+                .option(member)
+                .repeat(rule("classBody-repeat").sep(";", Token.EOL).option(member))
+                .sep("}");
+
+        /*
+         * defClass: "class" IDENTIFIER [ "extends" IDENTIFIER] class_body
+         */
+        defClass.sep("class")
+                .identifier(reserved)
+                .option(rule("class-extends").sep("extends").identifier(reserved))
+                .ast(classBody);
 
         reserved.add(";");
         reserved.add("{");

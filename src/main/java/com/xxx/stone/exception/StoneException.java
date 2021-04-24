@@ -1,4 +1,4 @@
-package com.xxx.stone;
+package com.xxx.stone.exception;
 
 import com.xxx.stone.ast.AbstractSyntaxTree;
 

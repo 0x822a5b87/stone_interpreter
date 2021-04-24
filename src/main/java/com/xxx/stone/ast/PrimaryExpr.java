@@ -5,24 +5,19 @@ import com.xxx.stone.interpreter.Environment;
 import java.util.List;
 
 /**
- * <em>
+ * <pre>
  * {@link PrimaryExpr} 是一个特殊的类，因为他提供了 {@link PrimaryExpr#create(List)} 方法，
  * 这个方法的优先级是高于构造器的。
- * <br/>
  * 在构造函数的 List<AbstractSyntaxTree> 的长度 == 1 时，它会忽略掉 PrimaryExpr 而直接
  * 返回它的子节点。
- * </em>
- * <br/>
  * 基础表达式，可能是 {@link NumberLiteral}, {@link Name}, {@link StringLiteral}
  * 括号括起来的 {@link  BasicParser#expr}, {@link BasicParser#simple}
- * <br/>
  * 其中 {@link BasicParser#expr} 和 {@link BasicParser#simple} 都是多元操作符
  * 所以它也可能是一个函数调用。
- * <br/>
  * 前面三种类型都是终结符，后面则不是。
- * <br/>
  *
  * @author 0x822a5b87
+ * </pre>
  */
 public class PrimaryExpr extends AbstractSyntaxList {
 

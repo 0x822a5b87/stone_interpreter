@@ -1,6 +1,6 @@
 package com.xxx.stone.ast;
 
-import com.xxx.stone.StoneException;
+import com.xxx.stone.exception.StoneException;
 
 /**
  * @author 0x822a5b87

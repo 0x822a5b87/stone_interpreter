@@ -1,6 +1,6 @@
 package com.xxx.stone.nat1ve;
 
-import com.xxx.stone.StoneException;
+import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
 import java.lang.reflect.Method;
 import javax.swing.JOptionPane;

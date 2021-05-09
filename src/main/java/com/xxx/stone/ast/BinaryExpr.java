@@ -3,10 +3,12 @@ package com.xxx.stone.ast;
 import static com.xxx.stone.interpreter.BasicEvaluator.FALSE;
 import static com.xxx.stone.interpreter.BasicEvaluator.TRUE;
 
+import com.xxx.stone.array.Bracket;
 import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.object.Dot;
 import com.xxx.stone.object.StoneObject;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,12 +84,21 @@ public class BinaryExpr extends AbstractSyntaxList {
      * </pre>
      *
      * @param callerEnv caller env
-     * @param expr      expr
-     * @param rvalue    right value
+     * @param expr expr
+     * @param rvalue right value
      * @return stoneObject
      */
     protected Object computePrimaryExpr(Environment callerEnv, PrimaryExpr expr, Object rvalue) {
         if (expr.hasPostfix(0) && expr.postfix(0) instanceof Dot) {
+            /// 注释
+            /*
+             * expr.evalSubExpr(callerEnv, 1);
+             * 这里是非常特殊的，因为 0 代表最后一个 {@link Postfix}，由于我们支持递归调用，所以我们
+             * 首先我们要找到调用 Postfix 的 caller，然后在这个 caller 上去依次调用 Postfix
+             * 之所以，要从 1 开始调用，是因为这里我们需要对结果赋值。
+             * 以 t.teenager.human.age = 10 为例子
+             * 如果我们直接 expr.evalSubExpr(callerEnv, 0); 我们将得到变量 age 的值，那么我们无法对 age 赋值。
+             */
             Object o = expr.evalSubExpr(callerEnv, 1);
             if (o instanceof StoneObject) {
                 StoneObject stoneObject = (StoneObject) o;
@@ -95,9 +106,21 @@ public class BinaryExpr extends AbstractSyntaxList {
                 setValue(stoneObject, (Dot) child, rvalue);
                 return stoneObject;
             }
+        } else if (expr.hasPostfix(0) && expr.postfix(0) instanceof Bracket) {
+            Object o = expr.evalSubExpr(callerEnv, 1);
+            if (o instanceof ArrayList) {
+                ArrayList<Object> arr = (ArrayList<Object>) o;
+                Postfix postfix = expr.postfix(0);
+                setArrayValue(arr, (Bracket) postfix, rvalue);
+                return arr;
+            }
         }
 
         throw new StoneException("bad assignment", this);
+    }
+
+    private void setArrayValue(ArrayList<Object> arr, Bracket bracket, Object rvalue) {
+        arr.set(bracket.index(), rvalue);
     }
 
     private void setValue(StoneObject stoneObject, Dot dot, Object rvalue) {

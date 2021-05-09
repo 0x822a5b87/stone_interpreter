@@ -7,6 +7,8 @@ import com.xxx.stone.Lexer;
 import com.xxx.stone.ParseException;
 import com.xxx.stone.Parser;
 import com.xxx.stone.Parser.Operators;
+import com.xxx.stone.array.ArrayLiteral;
+import com.xxx.stone.array.Bracket;
 import com.xxx.stone.func.Closure;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.interpreter.NestedEnvironment;
@@ -24,28 +26,32 @@ import org.fusesource.jansi.AnsiConsole;
  *    基于 {@link com.xxx.stone.ast.BasicParser} 扩展，增加函数解析功能
  *
  * {@code
- *    primary:    "(" expr ")" | NUMBER | IDENTIFIER | STRING | "fun" param_list block
- *    factor:        "-" primary | primary
- *    expr:        factor { OP factor }
- *    block:        "{" [ statement ] {(";" | EOL) [ statement ]} "}"
- *    statement:    "if" expr block ["else" block]
- *                          | "while" expr block
- *                          | simple
+ * primary     ::= ("[" [ elements ] "]"
+ *                   | "fun" param_list block
+ *                   | "(" expr ")"
+ *                   | NUMBER
+ *                   | IDENTIFIER
+ *                   | STRING)
+ *                   { postfix }
  *
- *    param: IDENTIFIER
- *    params: IDENTIFIER { "," params }
- *    param_list: "(" [ params ] ")"
- *    def: "def" IDENTIFIER param_list block
- *    args: expr { "," expr }
- *    primary:    ("(" expr ")" | NUMBER | IDENTIFIER | STRING) { postfix }
- *    simple: expr [ args ]
- *
- *    // class 定义
- *    member: def | simple
- *    class_body: "{" [ member] { (";" | EOL) | [ member ] } "}"
- *    defClass: "class" IDENTIFIER [ "extends" IDENTIFIER] class_body
- *    postfix: "." IDENTIFIER | "(" args ")"
- *    program: [ def | statement | defClass ] ( ";" | EOL )
+ * elements    ::= expr { "," expr }
+ * factor      ::= "-" primary | primary
+ * expr        ::= factor { OP factor }
+ * block       ::= "{" [ statement ] {(";" | EOL) [ statement ]} "}"
+ * statement   ::= "if" expr block ["else" block]
+ *                       | "while" expr block
+ *                       | simple
+ * param       ::= IDENTIFIER
+ * params      ::= IDENTIFIER { "," param }
+ * param_list  ::= "(" [ params ] ")"
+ * def         ::= "def" IDENTIFIER param_list block
+ * args        ::= expr { "," expr }
+ * simple      ::= expr [ args ]
+ * member      ::= def | simple
+ * class_body  ::= "{" [ member] { (";" | EOL) | [ member ] } "}"
+ * defClass    ::= "class" IDENTIFIER [ "extends" IDENTIFIER] class_body
+ * postfix     ::= "." IDENTIFIER | "(" args ")" | "[" expr "]"
+ * program     ::= [ def | statement | defClass ] ( ";" | EOL )
  * }
  *
  *    1. 注意 simple: expr { "(" args ")" } 是不正确的但是类似于 fun(10) 的语法仍然可以支持，因为它被匹配成了 primary
@@ -130,11 +136,14 @@ public class BasicParser {
 
     Parser defClass = rule("defClass", ClassStatement.class);
 
+    Parser elements = rule("elements", ArrayLiteral.class);
+
     public BasicParser() {
         expr.expression(BinaryExpr.class, factor, operators);
 
         // 注意，这里存在二义性，clojure 必须在前面，否则会被识别为 identifier
         primary.or(closure,
+                   rule("primary-array").sep("[").option(elements).sep("]"),
                    rule("primary01").sep("(").ast(expr).sep(")"),
                    rule("primary02").number(NumberLiteral.class),
                    rule("primary03").identifier(Name.class, reserved),
@@ -167,7 +176,9 @@ public class BasicParser {
 
         paramList.sep("(").maybe(params).sep(")");
 
-        postfix.or(rule("postfix-dot", Dot.class).sep(".").identifier(reserved),
+        postfix.or(rule("postfix-bracket", Bracket.class)
+                           .sep("[").ast(expr).sep("]"),
+                   rule("postfix-dot", Dot.class).sep(".").identifier(reserved),
                    rule("postfix-args").sep("(").maybe(args).sep(")"));
 
         args.ast(expr).repeat(rule("args01").sep(",").ast(expr));
@@ -194,11 +205,16 @@ public class BasicParser {
                 .option(rule("class-extends").sep("extends").identifier(reserved))
                 .ast(classBody);
 
+        elements.ast(expr)
+                .repeat(rule("elements-repeat").sep(",").ast(expr));
+
         reserved.add(";");
         reserved.add("{");
         reserved.add("}");
         reserved.add("(");
         reserved.add(")");
+        reserved.add("[");
+        reserved.add("]");
         reserved.add("def");
 
         reserved.add(Token.EOL);

@@ -40,7 +40,7 @@ public class Natives {
     }
 
     public static int print(Object obj) {
-        System.out.println(obj.toString());
+        System.out.println("[native print] : " + obj.toString());
         return 0;
     }
 

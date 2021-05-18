@@ -1,11 +1,10 @@
 package com.xxx.stone.optimizer;
 
-import com.xxx.stone.ast.Name;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 用于查找 {@link Name#name()} -> {@link Location} 的类
+ * 用于映射名字和 {@link Location} 的类。
  *
  * @author 0x822a5b87
  */

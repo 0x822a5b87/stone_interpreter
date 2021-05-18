@@ -45,7 +45,7 @@ public class ArrayEnvironment implements Environment {
         if (outer == null) {
             throw new StoneException("variable not found");
         }
-        put(nest - 1, index, value);
+        outer.put(nest - 1, index, value);
     }
 
     @Override

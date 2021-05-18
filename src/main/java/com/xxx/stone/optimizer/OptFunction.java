@@ -24,6 +24,7 @@ public class OptFunction extends Function {
 
     @Override
     public Environment makeEnv() {
+        // Function 一旦确定，它的局部变量个数就不会再改变了。
         return new ArrayEnvironment(size, callerEnv);
     }
 }

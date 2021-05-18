@@ -1,7 +1,6 @@
 package com.xxx.stone.ast;
 
 import com.xxx.stone.func.Closure;
-import com.xxx.stone.func.Function;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.optimizer.OptFunction;
 import com.xxx.stone.optimizer.Symbols;

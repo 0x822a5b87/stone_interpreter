@@ -15,6 +15,19 @@ import java.io.IOException;
  */
 public class OptimizerParser extends ArrayParser {
 
+    public static final String CODE = "i = 0\n"
+                                      + "def count(j) {\n"
+                                      + "    i = i + j\n"
+                                      + "}\n"
+                                      + "\n"
+                                      + "k = 0\n"
+                                      + "while (k < 10000) {\n"
+                                      + "    count(-1)\n"
+                                      + "    k = k + 1"
+                                      + "}\n"
+                                      + "\n"
+                                      + "print(i)";
+
     private final Symbols globalSymbols = new Symbols();
 
     @Override
@@ -39,7 +52,7 @@ public class OptimizerParser extends ArrayParser {
     public static void main(String[] args) throws ParseException, IOException {
         OptimizerParser parser = new OptimizerParser();
         long start = System.currentTimeMillis();
-        parser.run(FuncParser.FIB_CODE);
+        parser.run(CODE);
         System.out.println("cost : " + (System.currentTimeMillis() - start));
     }
 }

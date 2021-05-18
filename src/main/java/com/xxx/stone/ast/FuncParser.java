@@ -58,7 +58,7 @@ public class FuncParser extends BasicParser {
                                     + "        fib(n - 1) + fib(n - 2)\n"
                                     + "    }\n"
                                     + "}\n"
-                                    + "fib(10)";
+                                    + "fib(35)";
 
 
     public static void main(String[] args) throws ParseException, IOException {

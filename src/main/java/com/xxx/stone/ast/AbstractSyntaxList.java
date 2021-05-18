@@ -2,6 +2,7 @@ package com.xxx.stone.ast;
 
 import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
+import com.xxx.stone.optimizer.Symbols;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,5 +61,10 @@ public class AbstractSyntaxList extends AbstractSyntaxTree {
     @Override
     public Object eval(Environment env) {
         throw new StoneException("cannot eval: " + toString(), this);
+    }
+
+    @Override
+    public void lookup(Symbols symbols) {
+        this.forEach(ast -> ast.lookup(symbols));
     }
 }

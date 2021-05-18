@@ -1,5 +1,6 @@
 package com.xxx.stone.interpreter;
 
+import com.xxx.stone.exception.StoneException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,5 +40,15 @@ public class BasicEnvironment implements Environment {
     @Override
     public void setOuter(Environment e) {
 
+    }
+
+    @Override
+    public Object get(int nest, int index) {
+        throw new StoneException("unsupported method!");
+    }
+
+    @Override
+    public void put(int nest, int index, Object value) {
+        throw new StoneException("unsupported method!");
     }
 }

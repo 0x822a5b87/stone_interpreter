@@ -8,6 +8,7 @@ import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.object.Dot;
 import com.xxx.stone.object.StoneObject;
+import com.xxx.stone.optimizer.Symbols;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,10 +49,24 @@ public class BinaryExpr extends AbstractSyntaxList {
         }
     }
 
+    @Override
+    public void lookup(Symbols symbols) {
+        AbstractSyntaxTree left = left();
+        if ("=".equals(operator())) {
+            if (left instanceof Name) {
+                ((Name) left).lookupForAssign(symbols);
+                right().lookup(symbols);
+                return;
+            }
+        }
+        left().lookup(symbols);
+        right().lookup(symbols);
+    }
+
     protected Object computeAssign(Environment env, Object rvalue) {
         AbstractSyntaxTree l = left();
         if (l instanceof Name) {
-            env.put(((Name) l).name(), rvalue);
+            ((Name) l).evalForAssign(env, rvalue);
             return rvalue;
         } else if (l instanceof PrimaryExpr) {
             return computePrimaryExpr(env, (PrimaryExpr) l, rvalue);

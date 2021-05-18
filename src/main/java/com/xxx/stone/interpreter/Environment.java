@@ -50,4 +50,20 @@ public interface Environment {
      * @param e 外层env
      */
     void setOuter(Environment e);
+
+    /**
+     * {@link com.xxx.stone.optimizer.ArrayEnvironment#get(int, int)} 优化的方法
+     * @param nest 嵌套层数
+     * @param index 索引
+     * @return 对象的值
+     */
+    Object get(int nest, int index);
+
+    /**
+     * {@link com.xxx.stone.optimizer.ArrayEnvironment#put(int, int, Object)} 优化的 put 方法
+     * @param nest 嵌套的层数
+     * @param index 索引
+     * @param value 更新的值
+     */
+    void put(int nest, int index, Object value);
 }

@@ -2,6 +2,8 @@ package com.xxx.stone.nat1ve;
 
 import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
+import com.xxx.stone.optimizer.Location;
+import com.xxx.stone.optimizer.Symbols;
 import java.lang.reflect.Method;
 import javax.swing.JOptionPane;
 
@@ -19,16 +21,21 @@ public class Natives {
         return env;
     }
 
-    protected void appendNatives(Environment env) {
-        append(env, "print", Natives.class, "print", Object.class);
-        append(env, "read", Natives.class, "read");
-        append(env, "length", Natives.class, "length", String.class);
-        append(env, "toInt", Natives.class, "toInt", Object.class);
-        append(env, "currentTime", Natives.class, "currentTime");
+    public void appendNatives(Environment env) {
+        appendNatives2Array(env, null);
     }
 
-    protected void append(Environment env, String name, Class<?> clazz,
-                          String methodName, Class<?>... params) {
+    public void appendNatives2Array(Environment env, Symbols symbols) {
+        append(env, symbols, "print", Natives.class, "print", Object.class);
+        append(env, symbols, "read", Natives.class, "read");
+        append(env, symbols, "length", Natives.class, "length", String.class);
+        append(env, symbols, "toInt", Natives.class, "toInt", Object.class);
+        append(env, symbols, "currentTime", Natives.class, "currentTime");
+    }
+
+    protected void append(Environment env, Symbols symbols,
+                            String name, Class<?> clazz,
+                            String methodName, Class<?>... params) {
         Method m;
         try {
             m = clazz.getMethod(methodName, params);
@@ -37,6 +44,9 @@ public class Natives {
                                      + methodName);
         }
         env.put(name, new NativeFunction(methodName, m));
+        if (symbols != null) {
+            symbols.putNew(name);
+        }
     }
 
     public static int print(Object obj) {

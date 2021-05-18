@@ -1,6 +1,8 @@
 package com.xxx.stone.ast;
 
+import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
+import com.xxx.stone.optimizer.Symbols;
 import java.util.Iterator;
 
 /**
@@ -48,4 +50,14 @@ public abstract class AbstractSyntaxTree implements Iterable<AbstractSyntaxTree>
      * @return 执行结果
      */
     public abstract Object eval(Environment env);
+
+    /**
+     * lookup 方法从抽象语法树的根节点开始依次遍历所有的节点最终到达叶子节点。
+     * lookup 方法在遍历的时候如果发现了赋值表达式左边的变量名，就会查找 {@link Symbols} 对象，
+     * 判断该对象是否第一次出现、尚未记录。
+     * @param symbols symbols
+     */
+    public void lookup(Symbols symbols) {
+
+    }
 }

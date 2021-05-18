@@ -6,9 +6,9 @@ import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.interpreter.NestedEnvironment;
 
 /**
- * @author 0x822a5b87
+ * 函数
  *
- *         函数
+ * @author 0x822a5b87
  */
 public class Function {
 

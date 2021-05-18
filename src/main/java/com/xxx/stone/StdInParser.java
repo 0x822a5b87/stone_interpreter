@@ -1,6 +1,6 @@
 package com.xxx.stone;
 
-import com.xxx.stone.array.ArrayParser;
+import com.xxx.stone.optimizer.OptimizerParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 /**
  * @author 0x822a5b87
  */
-public class StdInParser extends ArrayParser {
+public class StdInParser extends OptimizerParser {
 
     BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 

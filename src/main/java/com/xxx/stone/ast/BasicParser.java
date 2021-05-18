@@ -247,7 +247,7 @@ public class BasicParser {
         AnsiConsole.systemUninstall();
     }
 
-    private void out(Environment global, AbstractSyntaxTree t) {
+    protected void out(Environment global, AbstractSyntaxTree t) {
         try {
             System.out.println(Ansi.ansi()
                                        .fg(Color.BLUE).a("ast: ")

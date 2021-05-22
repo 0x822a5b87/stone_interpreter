@@ -3,6 +3,7 @@ package com.xxx.stone.ast;
 import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.optimizer.Symbols;
+import com.xxx.stone.vm.Code;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,5 +67,12 @@ public class AbstractSyntaxList extends AbstractSyntaxTree {
     @Override
     public void lookup(Symbols symbols) {
         this.forEach(ast -> ast.lookup(symbols));
+    }
+
+    @Override
+    public void compile(Code code) {
+        for (AbstractSyntaxTree ast : this) {
+            ast.compile(code);
+        }
     }
 }

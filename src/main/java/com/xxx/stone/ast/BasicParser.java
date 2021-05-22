@@ -249,17 +249,26 @@ public class BasicParser {
 
     protected void out(Environment global, AbstractSyntaxTree t) {
         try {
-            System.out.println(Ansi.ansi()
-                                       .fg(Color.BLUE).a("ast: ")
-                                       .fg(Color.CYAN).a(t)
-                                       .reset());
-            System.out.println(Ansi.ansi()
-                                       .fg(Color.MAGENTA).a("eval: ")
-                                       .fg(Color.RED).a(t.eval(global))
-                                       .reset());
+            outputAst(t);
+            Object eval = t.eval(global);
+            outputObj(eval);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void outputAst(AbstractSyntaxTree t) {
+        System.out.println(Ansi.ansi()
+                                   .fg(Color.BLUE).a("ast: ")
+                                   .fg(Color.CYAN).a(t)
+                                   .reset());
+    }
+
+    private void outputObj(Object obj) {
+        System.out.println(Ansi.ansi()
+                                   .fg(Color.MAGENTA).a("eval: ")
+                                   .fg(Color.RED).a(obj)
+                                   .reset());
     }
 
     public void run(String code) throws ParseException {

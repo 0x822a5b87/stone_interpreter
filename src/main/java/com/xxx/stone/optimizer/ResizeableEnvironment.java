@@ -1,7 +1,6 @@
 package com.xxx.stone.optimizer;
 
 import com.xxx.stone.interpreter.Environment;
-import java.util.Arrays;
 
 /**
  * 由于程序新增的语句中可能包含了新的全局变量，而 {@link ArrayEnvironment#values} 的长度是不可变的。
@@ -26,7 +25,7 @@ public class ResizeableEnvironment extends ArrayEnvironment {
     public Object get(String name) {
         Integer index = names.findInCurrentLayer(name);
         if (index != null) {
-            return values[index];
+            return values.get(index);
         }
         if (outer == null) {
             return null;
@@ -41,6 +40,15 @@ public class ResizeableEnvironment extends ArrayEnvironment {
             env = this;
         }
         env.putNew(name, value);
+    }
+
+    @Override
+    public void put(int nest, int index, Object value) {
+        if (nest == 0) {
+            assign(index, value);
+        } else {
+            super.put(nest, index, value);
+        }
     }
 
     @Override
@@ -60,29 +68,12 @@ public class ResizeableEnvironment extends ArrayEnvironment {
         return outer.where(name);
     }
 
-    @Override
-    public void put(int nest, int index, Object value) {
-        if (nest == 0) {
-            assign(index, value);
-        } else {
-            super.put(nest, index, value);
-        }
-    }
-
     /**
      * 为 {@link ArrayEnvironment#values} 重新分配空间。
      * @param index 索引
      * @param value 值
      */
     protected void assign(int index, Object value) {
-        if (index >= values.length) {
-            int newLen = values.length * 2;
-            // 说明长度为 0
-            if (index >= newLen) {
-                newLen = index + 1;
-            }
-            values = Arrays.copyOf(values, newLen);
-        }
-        values[index] = value;
+        values.add(index, value);
     }
 }

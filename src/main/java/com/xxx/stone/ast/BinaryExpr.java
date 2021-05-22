@@ -9,6 +9,8 @@ import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.object.Dot;
 import com.xxx.stone.object.StoneObject;
 import com.xxx.stone.optimizer.Symbols;
+import com.xxx.stone.vm.Code;
+import com.xxx.stone.vm.InstructionSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -180,6 +182,61 @@ public class BinaryExpr extends AbstractSyntaxList {
             return a < b ? TRUE : FALSE;
         } else {
             throw new StoneException("bad operator", this);
+        }
+    }
+
+    @Override
+    public void compile(Code code) {
+        String operator = operator();
+        if ("=".equals(operator)) {
+            compileForAssign(code);
+        } else {
+            compileForOther(code, operator);
+        }
+    }
+
+    private void compileForAssign(Code code) {
+        AbstractSyntaxTree l = left();
+        if (l instanceof Name) {
+            Name name = (Name) l;
+            right().compile(code);
+            name.compileForAssign(code);
+        } else {
+            throw new StoneException("bad operator");
+        }
+    }
+
+    private void compileForOther(Code code, String operator) {
+        left().compile(code);
+        right().compile(code);
+        code.addByte(getOperationCode(operator));
+        code.addByte(InstructionSet.encodeRegister(code.getNextReg() - 2));
+        code.addByte(InstructionSet.encodeRegister(code.getNextReg() - 1));
+        // 按照我们的约定，在 operator 执行期间占用两个寄存器，但是执行完之后结果被存储在前面一个寄存器
+        // 所以执行完上面的指令之后我们可以架构寄存器指针回退1
+        code.getAndDecrementNextReg();
+    }
+
+    private byte getOperationCode(String operator) {
+        switch (operator) {
+            case "+":
+                return InstructionSet.ADD;
+            case "-":
+                return InstructionSet.SUB;
+            case "*":
+                return InstructionSet.MUL;
+            case "/":
+                return InstructionSet.DIV;
+            case "%":
+                return InstructionSet.REM;
+            case "==":
+                return InstructionSet.EQUAL;
+            case ">":
+                return InstructionSet.MORE;
+            case "<":
+                return InstructionSet.LESS;
+            default:
+                throw new StoneException("bad operator!");
         }
     }
 }

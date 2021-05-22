@@ -2,6 +2,9 @@ package com.xxx.stone.optimizer;
 
 import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
+import com.xxx.stone.vm.Code;
+import com.xxx.stone.vm.Vm;
+import java.util.ArrayList;
 
 /**
  * 优化执行时间的 {@link com.xxx.stone.interpreter.Environment}
@@ -10,15 +13,16 @@ import com.xxx.stone.interpreter.Environment;
  */
 public class ArrayEnvironment implements Environment {
 
-    protected Object[] values;
+    protected ArrayList<Object> values;
 
     protected Environment outer;
 
     public ArrayEnvironment(int size, Environment outer) {
-        this.values = new Object[size];
+        this.values = new ArrayList<>();
         this.outer = outer;
     }
 
+    @Override
     public Symbols symbols() {
         throw new StoneException("no symbols");
     }
@@ -26,7 +30,7 @@ public class ArrayEnvironment implements Environment {
     @Override
     public Object get(int nest, int index) {
         if (nest == 0) {
-            return values[index];
+            return values.get(index);
         }
 
         if (outer == null) {
@@ -39,13 +43,23 @@ public class ArrayEnvironment implements Environment {
     @Override
     public void put(int nest, int index, Object value) {
         if (nest == 0) {
-            values[index] = value;
+            values.add(index, value);
             return;
         }
         if (outer == null) {
             throw new StoneException("variable not found");
         }
         outer.put(nest - 1, index, value);
+    }
+
+    @Override
+    public Vm stoneVm() {
+        throw new StoneException("no such stone vm");
+    }
+
+    @Override
+    public Code code() {
+        throw new StoneException("no such code");
     }
 
     @Override

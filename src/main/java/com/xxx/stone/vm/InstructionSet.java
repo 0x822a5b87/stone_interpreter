@@ -38,7 +38,7 @@ public class InstructionSet {
     }
 
     public static boolean isRegister(byte operand) {
-        return operand < 0 && operand >= -StoneVm.NUM_OF_REG;
+        return operand < 0 && operand >= -Vm.NUM_OF_REG;
     }
 
     public static short encodeShortOffset(int offset) {
@@ -66,7 +66,7 @@ public class InstructionSet {
      * @return encoded register
      */
     public static byte encodeRegister(int reg) {
-        if (reg > StoneVm.NUM_OF_REG || reg < 0) {
+        if (reg > Vm.NUM_OF_REG || reg < 0) {
             throw new StoneException("too many register required : " + reg);
         }
         return (byte) (-(reg + 1));

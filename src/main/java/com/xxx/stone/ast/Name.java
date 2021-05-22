@@ -4,6 +4,8 @@ import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.optimizer.Location;
 import com.xxx.stone.optimizer.Symbols;
+import com.xxx.stone.vm.Code;
+import com.xxx.stone.vm.InstructionSet;
 
 /**
  * 操作符
@@ -55,11 +57,36 @@ public class Name extends AbstractSyntaxLeaf {
 
     /**
      * 为 {@link Name} 赋值
+     *
      * @param symbols symbols
      */
     public void lookupForAssign(Symbols symbols) {
         Location location = symbols.put(name());
         nest = location.nest;
         index = location.index;
+    }
+
+    @Override
+    public void compile(Code code) {
+        if (nest > 0) {
+            code.addByte(InstructionSet.GMOVE);
+            code.addShort(InstructionSet.encodeShortOffset(index));
+        } else {
+            code.addByte(InstructionSet.MOVE);
+            code.addByte(InstructionSet.encodeOffset(index));
+        }
+        code.addByte(InstructionSet.encodeRegister(code.getAndIncrementNextReg()));
+    }
+
+    public void compileForAssign(Code code) {
+        if (nest > 0) {
+            code.addByte(InstructionSet.GMOVE);
+            code.addByte(InstructionSet.encodeRegister(code.getNextReg() - 1));
+            code.addShort(InstructionSet.encodeShortOffset(index));
+        } else {
+            code.addByte(InstructionSet.MOVE);
+            code.addByte(InstructionSet.encodeRegister(code.getNextReg() - 1));
+            code.addByte(InstructionSet.encodeOffset(index));
+        }
     }
 }

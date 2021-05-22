@@ -6,6 +6,7 @@ import com.xxx.stone.ast.AbstractSyntaxTree;
 import com.xxx.stone.ast.FuncParser;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.nat1ve.Natives;
+import com.xxx.stone.vm.VmEnv;
 import java.io.IOException;
 
 /**
@@ -28,13 +29,16 @@ public class OptimizerParser extends ArrayParser {
                                       + "\n"
                                       + "print(i)";
 
-    private final Symbols globalSymbols = new Symbols();
+    protected Environment env;
+
+    public OptimizerParser() {
+        this.env = new ResizeableEnvironment();
+    }
 
     @Override
     protected Environment initNative() {
-        Environment env = new ResizeableEnvironment();
         Natives natives = new Natives();
-        natives.appendNatives2Array(env, globalSymbols);
+        natives.appendNatives2Array(env, env.symbols());
         return env;
     }
 
@@ -45,8 +49,11 @@ public class OptimizerParser extends ArrayParser {
 
     @Override
     protected void out(Environment global, AbstractSyntaxTree t) {
-        t.lookup(globalSymbols);
-        super.out(global, t);
+        if (global instanceof ResizeableEnvironment) {
+            ResizeableEnvironment env = (ResizeableEnvironment) global;
+            t.lookup(env.symbols());
+            super.out(env, t);
+        }
     }
 
     public static void main(String[] args) throws ParseException, IOException {

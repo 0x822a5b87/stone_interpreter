@@ -2,6 +2,7 @@ package com.xxx.stone.ast;
 
 import com.xxx.stone.Parser;
 import com.xxx.stone.interpreter.Environment;
+import com.xxx.stone.vm.Code;
 import java.util.List;
 
 /**
@@ -88,5 +89,19 @@ public class PrimaryExpr extends AbstractSyntaxList {
     @Override
     public Object eval(Environment env) {
         return evalSubExpr(env, 0);
+    }
+
+    @Override
+    public void compile(Code code) {
+        compileSubExpr(code, 0);
+    }
+
+    private void compileSubExpr(Code code, int nest) {
+        if (hasPostfix(nest)) {
+            compileSubExpr(code, nest + 1);
+            postfix(nest).compile(code);
+        } else {
+            operand().compile(code);
+        }
     }
 }

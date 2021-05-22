@@ -2,6 +2,8 @@ package com.xxx.stone.ast;
 
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.optimizer.Symbols;
+import com.xxx.stone.vm.Code;
+import com.xxx.stone.vm.VmEnv;
 import java.util.List;
 
 /**
@@ -29,8 +31,21 @@ public class ParameterList extends AbstractSyntaxList {
         return numChildren();
     }
 
+    /**
+     * 将参数放到栈中。
+     * @param callerEnv callerEnv
+     * @param index     index
+     * @param value     value
+     */
     public void eval(Environment callerEnv, int index, Object value) {
-        callerEnv.put(0, offsets[index], value);
+        if (callerEnv instanceof VmEnv) {
+            VmEnv vmEnv = (VmEnv) callerEnv;
+            // 我们为一个函数的所有变量（包括局部变量和全局变量）都建了一个索引
+            // 这个索引就对应了栈上的索引。
+            vmEnv.stoneVm().getStack()[offsets[index]] = value;
+        } else {
+            callerEnv.put(0, offsets[index], value);
+        }
     }
 
     @Override

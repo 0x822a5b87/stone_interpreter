@@ -1,8 +1,8 @@
 package com.xxx.stone.ast;
 
-import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.optimizer.Symbols;
+import com.xxx.stone.vm.Code;
 import java.util.Iterator;
 
 /**
@@ -60,4 +60,10 @@ public abstract class AbstractSyntaxTree implements Iterable<AbstractSyntaxTree>
     public void lookup(Symbols symbols) {
 
     }
+
+    /**
+     * 遍历抽象语法树的节点并生成虚拟机语言。
+     * @param code Code
+     */
+    public abstract void compile(Code code);
 }

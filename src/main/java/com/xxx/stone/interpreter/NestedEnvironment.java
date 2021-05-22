@@ -1,6 +1,9 @@
 package com.xxx.stone.interpreter;
 
 import com.xxx.stone.exception.StoneException;
+import com.xxx.stone.optimizer.Symbols;
+import com.xxx.stone.vm.Code;
+import com.xxx.stone.vm.Vm;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +20,22 @@ public class NestedEnvironment implements Environment {
         this.outer = outer;
         this.values = new HashMap<>();
     }
+
+    @Override
+    public Symbols symbols() {
+        throw new StoneException("no symbols!");
+    }
+
+    @Override
+    public Vm stoneVm() {
+        throw new StoneException("no such stone vm");
+    }
+
+    @Override
+    public Code code() {
+        throw new StoneException("no such code");
+    }
+
 
     @Override
     public void put(String name, Object value) {

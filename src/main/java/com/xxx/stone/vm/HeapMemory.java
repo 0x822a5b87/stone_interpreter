@@ -7,4 +7,17 @@ package com.xxx.stone.vm;
  */
 public interface HeapMemory {
 
+    /**
+     * 根据索引从堆中读取数据
+     * @param index index
+     * @return object
+     */
+    Object read(int index);
+
+    /**
+     * 向堆中写入一个数据
+     * @param index index
+     * @param value 写入的对象
+     */
+    void write(int index, Object value);
 }

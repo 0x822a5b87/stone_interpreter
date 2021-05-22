@@ -1,6 +1,8 @@
 package com.xxx.stone.ast;
 
 import com.xxx.stone.interpreter.Environment;
+import com.xxx.stone.vm.Code;
+import com.xxx.stone.vm.InstructionSet;
 import java.util.List;
 
 /**
@@ -22,5 +24,20 @@ public class BlockStatement extends AbstractSyntaxList {
             }
         }
         return result;
+    }
+
+    @Override
+    public void compile(Code code) {
+        if (numChildren() > 0) {
+            int initReg = code.getNextReg();
+            for (AbstractSyntaxTree ast : this) {
+                code.setNextReg(initReg);
+                ast.compile(code);
+            }
+        } else {
+            code.addByte(InstructionSet.MOVE);
+            code.addByte((byte) 0);
+            code.addByte(InstructionSet.encodeRegister(code.getAndIncrementNextReg()));
+        }
     }
 }

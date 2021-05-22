@@ -176,6 +176,15 @@ public class Vm {
                | ((array[index + 3] & 0xff));
     }
 
+    /**
+     * <pre>
+     * 第一版实现写成了
+     * <code>
+     *     return (short) (((array[index] & 0xff) << 8) | ((array[index] & 0xff)));
+     * </code>
+     * 花了接近10个小时DEBUG，日了狗了。
+     * </pre>
+     */
     public static int readShort(byte[] array, int index) {
         return (short) (((array[index] & 0xff) << 8)
                         | ((array[index + 1] & 0xff)));

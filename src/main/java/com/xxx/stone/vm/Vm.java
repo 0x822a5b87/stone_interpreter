@@ -207,8 +207,11 @@ public class Vm {
         pc += 3;
     }
 
+    /**
+     * {@link InstructionSet#GOTO} 跳转的是相对位置，这样才能实现位置无关。
+     */
     private void gotoInstruction() {
-        pc += readShort(code, code[pc + 1]);
+        pc += readShort(code, pc + 1);
     }
 
     /**
@@ -336,8 +339,9 @@ public class Vm {
         Object value = registers[decodeRegister(code[pc + 1])];
         if ((value instanceof Integer) && ((Integer) value) == 0) {
             pc += readShort(code, pc + 2);
+        } else {
+            pc += 4;
         }
-        pc += 4;
     }
 
     /**
@@ -366,7 +370,7 @@ public class Vm {
     }
 
     private void bconst() {
-        registers[decodeRegister(code[pc + 2])] = code[pc + 1];
+        registers[decodeRegister(code[pc + 2])] = (int) code[pc + 1];
         pc += 3;
     }
 

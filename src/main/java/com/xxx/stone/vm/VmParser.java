@@ -11,18 +11,20 @@ import java.io.IOException;
  */
 public class VmParser extends OptimizerParser {
 
-    public static final String VM_CODE = "i = 100\n"
-                                         + "def count() {\n"
-                                         + "    print(i)\n"
+    public static final String VM_CODE = "i = 0\n"
+                                         + "def add(j) {\n"
+                                         + "   if (j > 5) {\n"
+                                         + "       i = i + j\n"
+                                         + "       print(i)\n"
+                                         + "   }\n"
                                          + "}\n"
-                                         + "count()";
-
-//    public static final String VM_CODE = "i = 100\n"
-//                                         + "def count(j) {\n"
-//                                         + "    print(j)\n"
-//                                         + "}\n"
-//                                         + "k = i + 100\n"
-//                                         + "count(k)";
+                                         + "\n"
+                                         + "k = 5\n"
+                                         + "while (k < 10) {\n"
+                                         + "    add(k)\n"
+                                         + "    k = k + 1\n"
+                                         + "}\n"
+                                         + "print(i)";
 
     public VmParser() {
         env = new VmEnv(100000, 10000, 10000);

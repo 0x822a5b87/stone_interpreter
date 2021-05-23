@@ -37,8 +37,8 @@ public class Code {
     }
 
     public void set(short value, int pos) {
-        vm.getCode()[value] = (byte) (pos >>> 8);
-        vm.getCode()[value + 1] = (byte) (pos);
+        vm.getCode()[pos] = (byte) (value >>> 8);
+        vm.getCode()[pos + 1] = (byte) (value);
     }
 
     /**

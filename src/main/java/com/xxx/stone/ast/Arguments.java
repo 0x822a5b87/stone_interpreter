@@ -50,8 +50,7 @@ public class Arguments extends Postfix {
     }
 
     /**
-     * 函数的调用有以下几个步骤，此方法的调用只有在 {@link BlockStatement#compile(Code)} 中，当代码块
-     * 中调用有参函数时被调用。
+     * 函数的调用有以下几个步骤：
      * <ol>
      *     <li>将所有的参数从寄存器复制到栈</li>
      *     <li>调用函数</li>

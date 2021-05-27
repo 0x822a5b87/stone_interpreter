@@ -63,7 +63,6 @@ public class Code {
      * @param i operand
      */
     public void addInt(int i) {
-        // TODO 为什么是 >>> 而不是 >>
         addByte((byte) (i >>> 24));
         addByte((byte) (i >>> 16));
         addByte((byte) (i >>> 8));

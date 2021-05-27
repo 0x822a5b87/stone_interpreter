@@ -63,6 +63,10 @@ public abstract class AbstractSyntaxTree implements Iterable<AbstractSyntaxTree>
 
     /**
      * 遍历抽象语法树的节点并生成虚拟机语言。
+     * 此方法除了在子类的 {@link #compile(Code)} 方法调用之外，只在以下方法调用：
+     * <ol>
+     *     <li>{@link DefStatement#eval(Environment)} (VmEnv)}</li>
+     * </ol>
      * @param code Code
      */
     public abstract void compile(Code code);

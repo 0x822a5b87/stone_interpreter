@@ -17,7 +17,7 @@ import java.util.List;
 public class DefStatement extends AbstractSyntaxList {
 
     /**
-     * DefStatement 也是一个访问量非常大，所以也需要做个优化
+     * DefStatement 只会执行一次，但是后续调用的时候需要大量访问
      */
     protected int index;
     protected int size;

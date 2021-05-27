@@ -48,17 +48,17 @@ public class VmParser extends OptimizerParser {
      * goto 6
      * ```
      */
-    public static final String VM_CODE = "i = 0\n"
-                                         + "def add(j) {\n"
-                                         + "   if (j > 5) {\n"
-                                         + "       i = i + j\n"
-                                         + "       print(i)\n"
-                                         + "   }\n"
+    public static final String VM_CODE = "def sum(i) {\n"
+                                         + "    if (i > 0) {\n"
+                                         + "        j = 0\n"
+                                         + "        while (j < i) {\n"
+                                         + "            i = i + j\n"
+                                         + "            j = j + 1\n"
+                                         + "        }\n"
+                                         + "    }\n"
+                                         + "    print(i)\n"
                                          + "}\n"
-                                         + "def sub(j) {\n"
-                                         + "    \n"
-                                         + "}\n"
-                                         + "add(i)";
+                                         + "sum(10)";
 
     public VmParser() {
         env = new VmEnv(100000, 10000, 10000);

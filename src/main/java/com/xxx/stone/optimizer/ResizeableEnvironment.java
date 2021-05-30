@@ -25,7 +25,7 @@ public class ResizeableEnvironment extends ArrayEnvironment {
     public Object get(String name) {
         Integer index = names.findInCurrentLayer(name);
         if (index != null) {
-            return values.get(index);
+            return values[index];
         }
         if (outer == null) {
             return null;
@@ -74,6 +74,15 @@ public class ResizeableEnvironment extends ArrayEnvironment {
      * @param value 值
      */
     protected void assign(int index, Object value) {
-        values.add(index, value);
+        if (values.length <= index) {
+            int newLen = values.length * 2;
+            if (newLen == 0) {
+                newLen = 1;
+            }
+            Object[] newValues = new Object[newLen];
+            System.arraycopy(values, 0, newValues, 0, values.length);
+            values = newValues;
+        }
+        values[index] = value;
     }
 }

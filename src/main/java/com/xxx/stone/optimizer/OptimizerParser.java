@@ -22,7 +22,7 @@ public class OptimizerParser extends ArrayParser {
                                       + "}\n"
                                       + "\n"
                                       + "k = 0\n"
-                                      + "while (k < 10000) {\n"
+                                      + "while (k < 100) {\n"
                                       + "    count(-1)\n"
                                       + "    k = k + 1"
                                       + "}\n"

@@ -4,7 +4,6 @@ import com.xxx.stone.exception.StoneException;
 import com.xxx.stone.interpreter.Environment;
 import com.xxx.stone.vm.Code;
 import com.xxx.stone.vm.Vm;
-import java.util.ArrayList;
 
 /**
  * 优化执行时间的 {@link com.xxx.stone.interpreter.Environment}
@@ -13,12 +12,12 @@ import java.util.ArrayList;
  */
 public class ArrayEnvironment implements Environment {
 
-    protected ArrayList<Object> values;
+    protected Object[] values;
 
     protected Environment outer;
 
     public ArrayEnvironment(int size, Environment outer) {
-        this.values = new ArrayList<>();
+        this.values = new Object[size];
         this.outer = outer;
     }
 
@@ -30,7 +29,7 @@ public class ArrayEnvironment implements Environment {
     @Override
     public Object get(int nest, int index) {
         if (nest == 0) {
-            return values.get(index);
+            return values[index];
         }
 
         if (outer == null) {
@@ -43,7 +42,7 @@ public class ArrayEnvironment implements Environment {
     @Override
     public void put(int nest, int index, Object value) {
         if (nest == 0) {
-            values.add(index, value);
+            values[index] = value;
             return;
         }
         if (outer == null) {

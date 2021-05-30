@@ -16,7 +16,8 @@ public class Name extends AbstractSyntaxLeaf {
 
     public static final int UNKNOWN = -1;
 
-    protected int nest, index;
+    protected int nest;
+    protected int index;
 
     public Name(Token token) {
         super(token);

@@ -52,7 +52,6 @@ public class VmParser extends OptimizerParser {
                                          + "    if (i > 0) {\n"
                                          + "        j = 0\n"
                                          + "        while (j < i) {\n"
-                                         + "            i = i + j\n"
                                          + "            j = j + 1\n"
                                          + "        }\n"
                                          + "    }\n"

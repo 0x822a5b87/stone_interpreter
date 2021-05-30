@@ -23,12 +23,12 @@ public class VmEnv extends ResizeableEnvironment implements HeapMemory {
 
     @Override
     public Object read(int index) {
-        return values.get(index);
+        return values[index];
     }
 
     @Override
     public void write(int index, Object value) {
-        values.set(index, value);
+        values[index] = value;
     }
 
     @Override

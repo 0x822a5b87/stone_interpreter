@@ -42,7 +42,7 @@ public class WhileStatement extends AbstractSyntaxList {
         int conditionEnd = code.getCodeSize();
         code.addByte(InstructionSet.IFZERO);
         code.addByte(InstructionSet.encodeRegister(code.decrementAndGetNextReg()));
-        code.addByte((byte) 0);
+        code.addShort((byte) 0);
 
         code.setNextReg(oldReg);
         body().compile(code);

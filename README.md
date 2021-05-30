@@ -121,3 +121,17 @@ integer = "0" | [ "-" ], natural number ;
 A call stack is used for several related purposes, but **the main reason for having one is to keep track of the point to which each active subroutine should return control when it finishes executing**. An active subroutine is one that has been called, but is yet to complete execution, after which control should be handed back to the point of call. Such activations of subroutines may be nested to any level (recursive as a special case), hence the stack structure. For example, if a subroutine `DrawSquare` calls a subroutine `DrawLine` from four different places, DrawLine must know where to return when its execution completes. To accomplish this, the address following the instruction that jumps to DrawLine, the return address, is pushed onto the top of the call stack with each call.
 
 ![caller frame](./resources/call-frame.png)
+
+## lexer
+
+```regex
+\s*([0-9][0-9]*|[A-Za-z][A-Za-z0-9]*|=|==)
+```
+
+![automaton](./resources/automaton1.png)
+
+## parser
+
+四则运算的铁路图
+
+![四则运算的铁路图](./resources/四则运算的铁路图.png)

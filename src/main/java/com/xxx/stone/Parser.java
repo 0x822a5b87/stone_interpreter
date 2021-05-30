@@ -141,6 +141,7 @@ public class Parser {
                 throws ParseException {
             while (parser.match(lexer)) {
                 AbstractSyntaxTree t = parser.parse(lexer);
+                // 忽略所有为空的 ast
                 if (t.getClass() != AbstractSyntaxList.class || t.numChildren() > 0) {
                     res.add(t);
                 }

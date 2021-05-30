@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.xxx.stone.Parser.ExprElement</OriginalElement>
+  <nodes>
+    <node x="1013.439393939394" y="0.0">com.xxx.stone.Parser.Element</node>
+    <node x="400.0" y="171.0">com.xxx.stone.Parser.TreeElement</node>
+    <node x="2039.0000000000002" y="171.0">com.xxx.stone.Parser.RepeatElement</node>
+    <node x="984.409090909091" y="332.0">com.xxx.stone.Parser.StrTokenElement</node>
+    <node x="1519.939393939394" y="332.0">com.xxx.stone.Parser.IdTokenElement</node>
+    <node x="800.0" y="149.0">com.xxx.stone.Parser.OrTreeElement</node>
+    <node x="29.5" y="332.0">com.xxx.stone.Parser.SkipElement</node>
+    <node x="1306.939393939394" y="332.0">com.xxx.stone.Parser.NumTokenElement</node>
+    <node x="0.0" y="160.0">com.xxx.stone.Parser.LeafElement</node>
+    <node x="1200.0" y="160.0">com.xxx.stone.Parser.ATokenElement</node>
+    <node x="1600.0" y="138.0">com.xxx.stone.Parser.ExprElement</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.xxx.stone.Parser.OrTreeElement" target="com.xxx.stone.Parser.Element">
+      <point x="0.0" y="-61.0" />
+      <point x="990.0" y="118.0" />
+      <point x="1171.7727272727273" y="118.0" />
+      <point x="-31.666666666666742" y="39.0" />
+    </edge>
+    <edge source="com.xxx.stone.Parser.IdTokenElement" target="com.xxx.stone.Parser.ATokenElement">
+      <point x="0.0" y="-28.0" />
+      <point x="1611.439393939394" y="307.0" />
+      <point x="1516.6666666666667" y="307.0" />
+      <point x="126.66666666666674" y="50.0" />
+    </edge>
+    <edge source="com.xxx.stone.Parser.ATokenElement" target="com.xxx.stone.Parser.Element">
+      <point x="0.0" y="-50.0" />
+      <point x="1390.0" y="118.0" />
+      <point x="1235.1060606060607" y="118.0" />
+      <point x="31.666666666666742" y="39.0" />
+    </edge>
+    <edge source="com.xxx.stone.Parser.NumTokenElement" target="com.xxx.stone.Parser.ATokenElement">
+      <point x="0.0" y="-28.0" />
+      <point x="1403.439393939394" y="307.0" />
+      <point x="1390.0" y="307.0" />
+      <point x="0.0" y="50.0" />
+    </edge>
+    <edge source="com.xxx.stone.Parser.LeafElement" target="com.xxx.stone.Parser.Element">
+      <point x="0.0" y="-50.0" />
+      <point x="190.0" y="98.0" />
+      <point x="1045.1060606060607" y="98.0" />
+      <point x="-158.33333333333326" y="39.0" />
+    </edge>
+    <edge source="com.xxx.stone.Parser.SkipElement" target="com.xxx.stone.Parser.LeafElement">
+      <point x="0.0" y="-28.0" />
+      <point x="0.0" y="50.0" />
+    </edge>
+    <edge source="com.xxx.stone.Parser.StrTokenElement" target="com.xxx.stone.Parser.ATokenElement">
+      <point x="0.0" y="-28.0" />
+      <point x="1080.909090909091" y="307.0" />
+      <point x="1263.3333333333335" y="307.0" />
+      <point x="-126.66666666666663" y="50.0" />
+    </edge>
+    <edge source="com.xxx.stone.Parser.RepeatElement" target="com.xxx.stone.Parser.Element">
+      <point x="0.0" y="-39.0" />
+      <point x="2229.0" y="98.0" />
+      <point x="1361.7727272727275" y="98.0" />
+      <point x="158.33333333333348" y="39.0" />
+    </edge>
+    <edge source="com.xxx.stone.Parser.TreeElement" target="com.xxx.stone.Parser.Element">
+      <point x="0.0" y="-39.0" />
+      <point x="590.0" y="108.0" />
+      <point x="1108.439393939394" y="108.0" />
+      <point x="-95.0" y="39.0" />
+    </edge>
+    <edge source="com.xxx.stone.Parser.ExprElement" target="com.xxx.stone.Parser.Element">
+      <point x="0.0" y="-72.0" />
+      <point x="1809.5" y="108.0" />
+      <point x="1298.439393939394" y="108.0" />
+      <point x="95.0" y="39.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="954.0" y="79.0" />
+  <SelectedNodes>
+    <node>com.xxx.stone.Parser.SkipElement</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
